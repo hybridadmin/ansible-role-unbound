@@ -1,5 +1,5 @@
 galaxy_info:
-  author: Robert de Bock
+  author: Tinashe Chikomo
   role_name: unbound
   description: Install and configure unbound on your system.
   license: Apache-2.0
