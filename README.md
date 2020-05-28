@@ -4,7 +4,7 @@ Install and configure unbound on your system.
 
 |Travis|GitHub|Quality|Downloads|
 |------|------|-------|---------|
-|[![travis](https://travis-ci.com/robertdebock/ansible-role-unbound.svg?branch=master)](https://travis-ci.com/robertdebock/ansible-role-unbound)|[![github](https://github.com/robertdebock/ansible-role-unbound/workflows/Ansible%20Molecule/badge.svg)](https://github.com/robertdebock/ansible-role-unbound/actions)|[![quality](https://img.shields.io/ansible/quality/45335)](https://galaxy.ansible.com/robertdebock/unbound)|[![downloads](https://img.shields.io/ansible/role/d/45335)](https://galaxy.ansible.com/robertdebock/unbound)|
+|[![travis](https://travis-ci.org/hybridadmin/ansible-role-unbound.svg?branch=master)](https://travis-ci.com/hybridadmin/ansible-role-unbound)|[![github](https://github.com/hybridadmin/ansible-role-unbound/workflows/Ansible%20Molecule/badge.svg)](https://github.com/hybridadmin/ansible-role-unbound/actions)|[![quality](https://img.shields.io/ansible/quality/45335)](https://galaxy.ansible.com/hybridadmin/unbound)|[![downloads](https://img.shields.io/ansible/role/d/45335)](https://galaxy.ansible.com/hybridadmin/unbound)|
 
 ## Example Playbook
 
