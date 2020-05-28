@@ -15,7 +15,7 @@ env:
     namespace="hybridadmin"
   matrix:
     - MOLECULE_DISTRO: centos8
-    - MOLECULE_DISTRO: centos
+    - MOLECULE_DISTRO: centos7
 
 cache:
   - pip
