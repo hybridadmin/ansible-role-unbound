@@ -54,9 +54,10 @@
     /usr/local/sbin/unbound-anchor
   args:
     executable: /bin/bash
-  register: anchors_setup
+  register: trust_anchors_setup
   check_mode: no
   changed_when: false
+  failed_when: trust_anchors_setup.rc != 1 and trust_anchors_setup.rc != 0
 
 - name: replace values in service file
   replace:
