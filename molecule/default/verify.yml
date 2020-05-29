@@ -19,5 +19,5 @@
         name: "{{ nslookup_package }}"
         state: present
 
-    - name: nslookup robertdebock.nl
-      command: nslookup robertdebock.nl
+    - name: nslookup google.com
+      command: nslookup google.com
