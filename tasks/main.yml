@@ -27,7 +27,7 @@
   register: unbound_download_archive
   until: unbound_download_archive is succeeded
   retries: 3
-  changed_when: false
+#  changed_when: false
   notify:
     - configure
     - make
