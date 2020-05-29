@@ -1,3 +1,5 @@
+{{ ansible_managed | comment }}
+
 server:
 {% for key, value in unbound_settings.server.items() | sort() %}
 {% if key not in ["trust-anchor-file", "chroot"] %}
