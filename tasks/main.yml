@@ -8,14 +8,14 @@
   until: unbound_install_requirements is succeeded
   retries: 3
 
-- name: cleanup /tmp
-  shell: |
-    set -o pipefail
-    rm -rf /tmp/unbound*
-  args:
-    executable: /bin/bash
-  check_mode: no
-  changed_when: false
+#- name: cleanup /tmp
+#  shell: |
+#    set -o pipefail
+#    rm -rf /tmp/unbound*
+#  args:
+#    executable: /bin/bash
+#  check_mode: no
+#  changed_when: false
 
 - name: download archive
   unarchive:
@@ -69,6 +69,15 @@
   check_mode: no
   changed_when: false
   failed_when: trust_anchors_setup.rc != 1 and trust_anchors_setup.rc != 0
+  
+- name: download root hints
+  shell: |
+    set -o pipefail
+    wget http://www.internic.net/domain/named.root -O /usr/local/etc/unbound/named.root
+  args:
+    executable: /bin/bash
+  check_mode: no
+  changed_when: false
 
 - name: replace values in service file
   replace:
