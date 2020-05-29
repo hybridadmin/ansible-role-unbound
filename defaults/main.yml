@@ -2,7 +2,7 @@
 # defaults file for unbound
 
 # What version to download/install.
-unbound_version: 1.9.6
+unbound_version: 1.10.1
 
 # Where to unpack unbound.
 unbound_temporary_directory: /tmp
