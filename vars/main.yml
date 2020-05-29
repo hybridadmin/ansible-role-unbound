@@ -10,6 +10,7 @@ _unbound_requirements:
     - libsystemd-dev
     - libudev-dev
   Alpine:
+    - openssl
     - diffutils
     - expat-dev
     - file
@@ -23,6 +24,7 @@ _unbound_requirements:
     - openssl-devel
     - systemd-devel
   Suse:
+    - openssl  
     - diffutils
     - libexpat-devel
     - file
