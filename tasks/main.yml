@@ -38,6 +38,26 @@
 - name: flush handlers
   meta: flush_handlers
 
+- name: run unbound-control-setup
+  shell: |
+    set -o pipefail
+    /usr/local/sbin/unbound-control-setup
+  args:
+    executable: /bin/bash
+  register: control_key_setup
+  check_mode: no
+  changed_when: false
+
+- name: run unbound-anchor
+  shell: |
+    set -o pipefail
+    /usr/local/sbin/unbound-anchor
+  args:
+    executable: /bin/bash
+  register: anchors_setup
+  check_mode: no
+  changed_when: false
+
 - name: replace values in service file
   replace:
     path: /etc/systemd/system/unbound.service
