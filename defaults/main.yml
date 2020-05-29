@@ -37,7 +37,7 @@ unbound_settings:
     harden-glue: "yes"
     harden-dnssec-stripped: "yes"
     log-queries: "yes"
-    trust-anchor-file: "/usr/local/etc/unbound/root.key"
+#    trust-anchor-file: "/usr/local/etc/unbound/root.key"
     num-threads: 4
     msg-cache-slabs: 4
     rrset-cache-slabs: 4
