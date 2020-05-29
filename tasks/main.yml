@@ -8,6 +8,15 @@
   until: unbound_install_requirements is succeeded
   retries: 3
 
+- name: remove previous file from /tmp
+  shell: |
+    set -o pipefail
+    rm -rf /tmp/unbound*
+  args:
+    executable: /bin/bash
+  check_mode: no
+  changed_when: false
+
 - name: download archive
   unarchive:
     src: "https://nlnetlabs.nl/downloads/unbound/unbound-{{ unbound_version }}.tar.gz"
