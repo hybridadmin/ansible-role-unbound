@@ -8,7 +8,7 @@
   until: unbound_install_requirements is succeeded
   retries: 3
 
-- name: remove previous file from /tmp
+- name: cleanup /tmp
   shell: |
     set -o pipefail
     rm -rf /tmp/unbound*
@@ -27,6 +27,7 @@
   register: unbound_download_archive
   until: unbound_download_archive is succeeded
   retries: 3
+  changed_when: false
   notify:
     - configure
     - make
@@ -43,6 +44,7 @@
     name: unbound
     group: unbound
     system: yes
+  changed_when: false  
 
 - name: flush handlers
   meta: flush_handlers
@@ -79,6 +81,7 @@
     - regexp: "@UNBOUND_RUN_DIR@"
     - regexp: "@UNBOUND_CHROOT_DIR@"
     - regexp: "@UNBOUND_PIDFILE@"
+  changed_when: false  
   notify:
     - systemctl daemon-reload
 
@@ -87,6 +90,7 @@
     path: /etc/systemd/system/unbound.service
     regexp: "^({{ item }}.*)"
     replace: '#\1'
+  changed_when: false
   loop:
     - CapabilityBoundingSet
     - ProtectSystem
