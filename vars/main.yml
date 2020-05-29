@@ -3,6 +3,7 @@
 _unbound_requirements:
   default:
     - openssl
+    - wget
     - diffutils
     - libexpat1-dev
     - file
@@ -11,6 +12,7 @@ _unbound_requirements:
     - libudev-dev
   Alpine:
     - openssl
+    - wget    
     - diffutils
     - expat-dev
     - file
@@ -18,13 +20,15 @@ _unbound_requirements:
     - systemd-dev
   RedHat:
     - openssl
+    - wget    
     - diffutils
     - expat-devel
     - file
     - openssl-devel
     - systemd-devel
   Suse:
-    - openssl  
+    - openssl
+    - wget    
     - diffutils
     - libexpat-devel
     - file
