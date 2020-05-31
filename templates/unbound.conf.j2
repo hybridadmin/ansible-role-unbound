@@ -1,19 +1,14 @@
 {{ ansible_managed | comment }}
 
-server:
-{% for key, value in unbound_settings.server.items() | sort() %}
-{% if key not in ["trust-anchor-file", "chroot"] %}
+{% for section in config_sections %}
+{% if unbound_settings[''~section.name] is defined %}
+{{ section.value }}:
+{% for key, value in unbound_settings[''~section.name].items() | sort() %}
+{% if key not in ["trust-anchor-file", "chroot", "control-cert-file", "control-key-file", "server-cert-file", "server-key-file"] %}
     {{ key }}: {{ value }}
 {% else %}
     {{ key }}: "{{ value }}"
 {% endif %}
 {% endfor %}
-
-remote-control:
-{% for key, value in unbound_settings.remote_control.items() | sort() %}
-{% if key not in ["control-cert-file", "control-key-file", "server-cert-file", "server-key-file"] %}
-    {{ key }}: {{ value }}
-{% else %}
-    {{ key }}: "{{ value }}"
 {% endif %}
 {% endfor %}
