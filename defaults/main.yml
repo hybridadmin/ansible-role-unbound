@@ -15,7 +15,7 @@ unbound_port: 53
 
 # configuration file settings
 unbound_settings:
-  server:
+  server_section:
     access-control: "0.0.0.0/0 allow"
     do-ip4: "yes"
     do-ip6: "no"
@@ -37,7 +37,8 @@ unbound_settings:
     harden-glue: "yes"
     harden-dnssec-stripped: "yes"
     log-queries: "yes"
-#    trust-anchor-file: "/usr/local/etc/unbound/root.key"
+    root-hints: "/usr/local/etc/unbound/named.root"
+    trust-anchor-file: "/usr/local/etc/unbound/root.key"
     num-threads: 4
     msg-cache-slabs: 4
     rrset-cache-slabs: 4
@@ -53,7 +54,7 @@ unbound_settings:
     outgoing-range: 250
     ratelimit: 1000
     ratelimit-size: 1m
-  remote_control:
+  remote_control_section:
     control-enable: "yes"
     server-key-file: "/usr/local/etc/unbound/unbound_server.key"
     server-cert-file: "/usr/local/etc/unbound/unbound_server.pem"
