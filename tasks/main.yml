@@ -117,7 +117,8 @@
   meta: flush_handlers
 
 - name: start and enable unbound
-  service:
+  systemd:
     name: unbound
     state: started
     enabled: yes
+    daemon_reload: yes
