@@ -2,6 +2,8 @@
 # vars file for unbound
 _unbound_requirements:
   default:
+    - gcc
+    - make
     - openssl
     - wget
     - diffutils
@@ -11,6 +13,8 @@ _unbound_requirements:
     - libsystemd-dev
     - libudev-dev
   Alpine:
+    - gcc
+    - make
     - openssl
     - wget    
     - diffutils
@@ -18,7 +22,18 @@ _unbound_requirements:
     - file
     - openssl-dev
     - systemd-dev
+  Debian:
+    - gcc
+    - make
+    - autoconf
+    - openssl
+    - wget
+    - libsystemd-dev
+    - openssl-devel
+    - pkg-config    
   RedHat:
+    - gcc
+    - make
     - openssl
     - wget    
     - diffutils
@@ -27,6 +42,8 @@ _unbound_requirements:
     - openssl-devel
     - systemd-devel
   Suse:
+    - gcc
+    - make  
     - openssl
     - wget    
     - diffutils
