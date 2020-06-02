@@ -65,6 +65,25 @@ unbound_interface: 127.0.0.1
 
 # The port to listen on.
 unbound_port: 53
+
+# configuration file settings
+unbound_settings:
+  server_section:
+    access-control: "0.0.0.0/0 allow"
+    do-ip4: "yes"
+    do-ip6: "no"
+    do-udp: "yes"
+    do-tcp: "yes"
+    chroot: ""
+    username: "unbound"
+    aggressive-nsec: "yes"
+    cache-max-ttl: 14400
+    cache-min-ttl: 1200
+    hide-identity: "yes"
+    hide-version: "yes"
+    interface: 0.0.0.0
+  remote_control_section:
+    control-enable: "yes"  
 ```
 
 ## Requirements
