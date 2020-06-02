@@ -17,7 +17,7 @@ This example is taken from `molecule/resources/converge.yml` and is tested on ea
   gather_facts: yes
 
   roles:
-    - role: robertdebock.unbound
+    - role: hybridadmin.unbound
 ```
 
 For verification `molecule/resources/verify.yml` run after the role has been applied.
@@ -43,11 +43,9 @@ For verification `molecule/resources/verify.yml` run after the role has been app
         name: "{{ nslookup_package }}"
         state: present
 
-    - name: nslookup robertdebock.nl
-      command: nslookup robertdebock.nl
+    - name: nslookup google.com
+      command: nslookup google.com
 ```
-
-Also see a [full explanation and example](https://robertdebock.nl/how-to-use-these-roles.html) on how to use these roles.
 
 ## Role Variables
 
@@ -111,7 +109,7 @@ Testing is done using [Tox](https://tox.readthedocs.io/en/latest/) and [Molecule
 [Tox](https://tox.readthedocs.io/en/latest/) tests multiple ansible versions.
 [Molecule](https://github.com/ansible/molecule) tests multiple distributions.
 
-To test using the defaults (any installed ansible version, namespace: `robertdebock`, image: `fedora`, tag: `latest`):
+To test using the defaults (any installed ansible version, namespace: `hybridadmin`, image: `fedora`, tag: `latest`):
 
 ```
 molecule test
@@ -123,12 +121,12 @@ image="debian" tag="stable" tox
 ```
 
 Or you can test multiple versions of Ansible, and select images:
-Tox allows multiple versions of Ansible to be tested. To run the default (namespace: `robertdebock`, image: `fedora`, tag: `latest`) tests:
+Tox allows multiple versions of Ansible to be tested. To run the default (namespace: `hybridadmin`, image: `fedora`, tag: `latest`) tests:
 
 ```
 tox
 
-# To run CentOS (namespace: `robertdebock`, tag: `latest`)
+# To run CentOS (namespace: `hybridadmin`, tag: `latest`)
 image="centos" tox
 # Or customize more:
 image="debian" tag="stable" tox
