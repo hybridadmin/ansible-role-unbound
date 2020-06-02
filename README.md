@@ -69,7 +69,7 @@ unbound_port: 53
 # configuration file settings
 unbound_settings:
   server_section:
-    access-control: "0.0.0.0/0 allow"
+    access-control: "127.0.0.1/8 allow"
     do-ip4: "yes"
     do-ip6: "no"
     do-udp: "yes"
