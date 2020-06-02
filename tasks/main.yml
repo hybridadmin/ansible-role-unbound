@@ -62,7 +62,7 @@
 - name: run unbound-anchor
   shell: |
     set -o pipefail
-    /usr/local/sbin/unbound-anchor
+    /usr/local/sbin/unbound-anchor -v
   args:
     executable: /bin/bash
   register: trust_anchors_setup
