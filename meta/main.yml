@@ -23,5 +23,7 @@ galaxy_info:
   galaxy_tags:
     - unbound
     - centos
+    - ubuntu
+    - fedora
 
 dependencies: []
