@@ -27,7 +27,6 @@
   register: unbound_download_archive
   until: unbound_download_archive is succeeded
   retries: 3
-#  changed_when: false
   notify:
     - configure
     - make
@@ -115,10 +114,13 @@
 
 - name: flush handlers
   meta: flush_handlers
+  
+- name: Populate service facts
+  service_facts:
 
 - name: disable systemd-resolved
   include: systemd-resolved.yml
-  when: disable_systemd_resolved|bool == true
+  when: (disable_systemd_resolved|bool == true) and ('systemd-resolved.service' in services)
 
 - name: start and enable unbound
   systemd:
