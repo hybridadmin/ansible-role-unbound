@@ -116,6 +116,10 @@
 - name: flush handlers
   meta: flush_handlers
 
+- name: disable systemd-resolved
+  include: systemd-resolved.yml
+  when: disable_systemd_resolved|bool == true
+
 - name: start and enable unbound
   systemd:
     name: unbound
