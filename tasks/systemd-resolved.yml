@@ -1,0 +1,27 @@
+---
+- name: stop and disable systemd-resolved
+  systemd:
+    name: systemd-resolved
+    state: stopped
+    enabled: no
+    masked : yes
+
+- name: edit systemd-resolved conf
+  replace:
+    path:  /etc/systemd/resolved.conf
+    regexp: "{{ item.name }}"
+    replace: "{{ item.value }}"
+  loop:
+    -   { name: "^((#|)DNS=.*)", value: "DNS=127.0.0.1" }
+    -   { name: "^(.*MulticastDNS=.*)", value: "MulticastDNS=no" }
+    -   { name: "^(.*DNSStubListener=.*)", value: "DNSStubListener=no" }
+
+- name: edit networkmanager conf
+  lineinfile:
+    path: /etc/NetworkManager/NetworkManager.conf
+    regexp: "{{ item.name }}"
+    insertafter: '\[main\]'
+    line: "{{ item.value }}"
+  loop:
+    -   { name: "^((#|)dns=.*)", value: "dns=none" }
+    -   { name: "^((#|)systemd-resolved=.*)", value: "systemd-resolved=false" }
