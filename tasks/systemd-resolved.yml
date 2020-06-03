@@ -12,9 +12,9 @@
     regexp: "{{ item.name }}"
     replace: "{{ item.value }}"
   loop:
-    -   { name: "^((#|)DNS=.*)", value: "DNS=127.0.0.1" }
-    -   { name: "^(.*MulticastDNS=.*)", value: "MulticastDNS=no" }
-    -   { name: "^(.*DNSStubListener=.*)", value: "DNSStubListener=no" }
+    - { name: "^((#|)DNS=.*)", value: "DNS=127.0.0.1" }
+    - { name: "^((#|)MulticastDNS=.*)", value: "MulticastDNS=no" }
+    - { name: "^((#|)DNSStubListener=.*)", value: "DNSStubListener=no" }
 
 - name: edit networkmanager conf
   lineinfile:
@@ -23,5 +23,5 @@
     insertafter: '\[main\]'
     line: "{{ item.value }}"
   loop:
-    -   { name: "^((#|)dns=.*)", value: "dns=none" }
-    -   { name: "^((#|)systemd-resolved=.*)", value: "systemd-resolved=false" }
+    - { name: "^((#|)dns=.*)", value: "dns=none" }
+    - { name: "^((#|)systemd-resolved=.*)", value: "systemd-resolved=false" }
