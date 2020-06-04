@@ -124,7 +124,7 @@
 
 - name: disable systemd-resolved
   include: systemd-resolved.yml
-  when: (disable_systemd_resolved|bool == true) and ('"enabled" in systemd_resolved_status.stdout')
+  when: (disable_systemd_resolved|bool == true) and ('enabled' in systemd_resolved_status.stdout)
 
 - name: start and enable unbound
   systemd:
