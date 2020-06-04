@@ -104,7 +104,6 @@ unbound_settings:
     so-rcvbuf: 4m
     so-sndbuf: 4m
     so-reuseport: "yes"
-    outgoing-range: 250
     ratelimit: 1000
     ratelimit-size: 1m
   remote_control_section:
@@ -136,14 +135,6 @@ The minimum version of Ansible required is 2.8 but tests have been done to:
 - The previous version, on version lower.
 - The current version.
 - The development version.
-
-## Exceptions
-
-Some variarations of the build matrix do not work. These are the variations and reasons why the build won't work:
-
-| variation                 | reason                 |
-|---------------------------|------------------------|
-| alpine | Idempotence test failed: start and enable unbound |
 
 
 ## Testing
