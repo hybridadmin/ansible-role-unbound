@@ -117,12 +117,14 @@
   check_mode: no
   changed_when: false
   register: systemd_resolved_status
-#  service_facts:
+
+- debug:
+    msg: "{{ systemd_resolved_status }}"
+  when: ('"enabled" in systemd_resolved_status.stdout')
 
 - name: disable systemd-resolved
   include: systemd-resolved.yml
   when: (disable_systemd_resolved|bool == true) and ('"enabled" in systemd_resolved_status.stdout')
-#  when: (disable_systemd_resolved|bool == true) and ('systemd-resolved.service' in services)
 
 - name: start and enable unbound
   systemd:
