@@ -118,10 +118,6 @@
   changed_when: false
   register: systemd_resolved_status
 
-- debug:
-    msg: "{{ systemd_resolved_status }}"
-  when: ('"enabled" in systemd_resolved_status.stdout')
-
 - name: disable systemd-resolved
   include: systemd-resolved.yml
   when: (disable_systemd_resolved|bool == true) and ('enabled' in systemd_resolved_status.stdout)
