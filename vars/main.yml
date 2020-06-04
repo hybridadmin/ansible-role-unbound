@@ -31,7 +31,10 @@ _unbound_requirements:
     - openssl
     - wget
     - libsystemd-dev
-    - openssl-devel
+    - diffutils
+    - libexpat1-dev
+    - libssl-dev
+    - libudev-dev
     - pkg-config    
   RedHat:
     - gcc
