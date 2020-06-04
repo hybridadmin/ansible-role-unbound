@@ -4,7 +4,7 @@
 {% if unbound_settings[''~section.name] is defined %}
 {{ section.value }}:
 {% for key, value in unbound_settings[''~section.name].items() | sort() %}
-{% if key not in ["trust-anchor-file", "chroot", "control-cert-file", "control-key-file", "server-cert-file", "server-key-file"] %}
+{% if key not in ['chroot','directory','logfile','pidfile','root-hints','trust-anchor-file','auto-trust-anchor-file','trusted-keys-file','dlv-anchor-file','server-cert-file','control-cert-file','server-key-file','control-key-file','zonefile','ipsecmod-hook','zonefile','tls-service-key','ssl-service-key','tls-service-pem','ssl-service-pem','tls-cert-bundle','ssl-cert-bundle','tls-session-ticket-keys','tls-ciphers','tls-ciphersuites','log-identity','identity','version','define-tag','access-control-tag','local-zone-tag','module-config','username'] %}
     {{ key }}: {{ value }}
 {% else %}
     {{ key }}: "{{ value }}"
