@@ -28,6 +28,7 @@
     daemon_reload: yes
 
 - name: restart unbound
-  service:
+  systemd:
     name: unbound
     state: restarted
+    daemon_reload: yes
