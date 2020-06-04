@@ -8,15 +8,6 @@
   until: unbound_install_requirements is succeeded
   retries: 3
 
-#- name: cleanup /tmp
-#  shell: |
-#    set -o pipefail
-#    rm -rf /tmp/unbound*
-#  args:
-#    executable: /bin/bash
-#  check_mode: no
-#  changed_when: false
-
 - name: download archive
   unarchive:
     src: "https://nlnetlabs.nl/downloads/unbound/unbound-{{ unbound_version }}.tar.gz"
@@ -62,6 +53,8 @@
   shell: |
     set -o pipefail
     /usr/local/sbin/unbound-anchor -v
+  environment:
+    LD_LIBRARY_PATH: /usr/local/lib
   args:
     executable: /bin/bash
   register: trust_anchors_setup
@@ -116,11 +109,20 @@
   meta: flush_handlers
   
 - name: Populate service facts
-  service_facts:
+  shell: |
+    set -o pipefail
+    systemctl list-unit-files --no-pager --type service --all | grep -E 'systemd-resolved|^UNIT'
+  args:
+    executable: /bin/bash
+  check_mode: no
+  changed_when: false
+  register: systemd_resolved_status
+#  service_facts:
 
 - name: disable systemd-resolved
   include: systemd-resolved.yml
-  when: (disable_systemd_resolved|bool == true) and ('systemd-resolved.service' in services)
+  when: (disable_systemd_resolved|bool == true) and ('"enabled" in systemd_resolved_status.stdout')
+#  when: (disable_systemd_resolved|bool == true) and ('systemd-resolved.service' in services)
 
 - name: start and enable unbound
   systemd:
