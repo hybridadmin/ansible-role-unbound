@@ -25,4 +25,4 @@
   loop:
     - { name: "^((#|)dns=.*)", value: "dns=none" }
     - { name: "^((#|)systemd-resolved=.*)", value: "systemd-resolved=false" }
-  when: ansible_distribution == 'RedHat'
+  when: ansible_os_family == 'RedHat'
