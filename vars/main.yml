@@ -67,6 +67,5 @@ config_sections:
   - { name: "auth_zone_section" , value: 'auth-zone' }
   - { name: "view_section" , value: 'view' }
   - { name: "python_section" , value: 'python' }
-  - { name: "module_config_section" , value: 'module-config' }
   - { name: "dnscrypt_section" , value: 'dnscrypt' }
   - { name: "rpz_section" , value: 'rpz' }
