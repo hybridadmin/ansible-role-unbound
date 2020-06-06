@@ -8,46 +8,33 @@ Install and configure unbound on your system.
 
 ## Example Playbook
 
-This example is taken from `molecule/resources/converge.yml` and is tested on each push, pull request and release.
+An example playbook can be specified as below:
 ```yaml
 ---
-- name: converge
-  hosts: all
-  become: yes
-  gather_facts: yes
-
+- hosts: all
+  vars:
+    unbound_version: 1.10.1
+    unbound_temporary_directory: /tmp
+    unbound_interface: 127.0.0.1
+    unbound_port: 53
   roles:
     - role: hybridadmin.unbound
 ```
 
-For verification `molecule/resources/verify.yml` run after the role has been applied.
-```yaml
----
-- name: Verify
-  hosts: all
-  become: yes
-  gather_facts: yes
-
-  vars:
-    _nslookup_package:
-      default:
-        - bind-utils
-      Debian:
-        - dnsutils
-
-    nslookup_package: "{{ _nslookup_package[ansible_os_family] | default(_nslookup_package['default']) }}"
-
-  tasks:
-    - name: install nslookup
-      package:
-        name: "{{ nslookup_package }}"
-        state: present
-
-    - name: nslookup google.com
-      command: nslookup google.com
-```
-
 ## Role Variables
+
+The configuration options in [unbound.conf](https://nlnetlabs.nl/documentation/unbound/unbound.conf/) and what sections they should be used under and defined below:
+```yaml
+server_section: 'options under the server: clause are defined here'
+remote_control_section: 'options under the remote-control: clause are defined here'
+stub_zone_section: 'options under the stub-zone: clause are defined here'
+forward_zone_section: 'options under the forward-zone: clause are defined here'
+auth_zone_section: 'options under the auth-zone: clause are defined here'
+view_section: 'options under the view: clause are defined here'
+python_section: 'options under the python: clause are defined here'
+dnscrypt_section: 'options under the dnscrypt: clause are defined here'
+rpz_section: 'options under the rpz: clause are defined here'
+```
 
 These variables are set in `defaults/main.yml`:
 ```yaml
@@ -119,57 +106,6 @@ unbound_settings:
 - Access to a repository containing packages, likely on the internet.
 - A recent version of Ansible. (Tests run on the current, previous and next release of Ansible.)
 
-## Compatibility
-
-This role has been tested on these [container images](https://hub.docker.com/):
-
-|container|tags|
-|---------|----|
-|el|7, 8|
-|ubuntu|18.04, 20.04|
-|fedora|31, 32|
-|opensuse|all|
-
-The minimum version of Ansible required is 2.8 but tests have been done to:
-
-- The previous version, on version lower.
-- The current version.
-- The development version.
-
-
-## Testing
-
-[Unit tests](https://travis-ci.com/hybridadmin/ansible-role-unbound) are done on every commit, pull request, release and periodically.
-
-If you find issues, please register them in [GitHub](https://github.com/hybridadmin/ansible-role-unbound/issues)
-
-Testing is done using [Tox](https://tox.readthedocs.io/en/latest/) and [Molecule](https://github.com/ansible/molecule):
-
-[Tox](https://tox.readthedocs.io/en/latest/) tests multiple ansible versions.
-[Molecule](https://github.com/ansible/molecule) tests multiple distributions.
-
-To test using the defaults (any installed ansible version, namespace: `hybridadmin`, image: `fedora`, tag: `latest`):
-
-```
-molecule test
-
-# Or select a specific image:
-image=ubuntu molecule test
-# Or select a specific image and a specific tag:
-image="debian" tag="stable" tox
-```
-
-Or you can test multiple versions of Ansible, and select images:
-Tox allows multiple versions of Ansible to be tested. To run the default (namespace: `hybridadmin`, image: `fedora`, tag: `latest`) tests:
-
-```
-tox
-
-# To run CentOS (namespace: `hybridadmin`, tag: `latest`)
-image="centos" tox
-# Or customize more:
-image="debian" tag="stable" tox
-```
 
 ## License
 
@@ -177,3 +113,5 @@ Apache-2.0
 
 
 ## Author Information
+
+hybridadmin
