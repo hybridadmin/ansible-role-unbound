@@ -24,6 +24,7 @@ _unbound_requirements:
     - file
     - openssl-dev
     - systemd-dev
+    - libevent-dev
   Debian:
     - gcc
     - make
@@ -35,7 +36,8 @@ _unbound_requirements:
     - libexpat1-dev
     - libssl-dev
     - libudev-dev
-    - pkg-config    
+    - pkg-config
+    - libevent-dev
   RedHat:
     - gcc
     - make
@@ -46,6 +48,7 @@ _unbound_requirements:
     - file
     - openssl-devel
     - systemd-devel
+    - libevent-devel
   Suse:
     - gcc
     - make  
@@ -56,6 +59,7 @@ _unbound_requirements:
     - file
     - openssl-devel
     - systemd-devel
+    - libevent-devel
 
 unbound_requirements: "{{ _unbound_requirements[ansible_os_family] | default(_unbound_requirements['default']) }}"
 
