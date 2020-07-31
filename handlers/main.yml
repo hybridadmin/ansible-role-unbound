@@ -1,7 +1,7 @@
 ---
 # handlers file for unbound
 - name: configure
-  command: ./configure --enable-systemd
+  command: ./configure --enable-systemd --with-libevent
   args:
     chdir: "{{ unbound_temporary_directory }}/unbound-{{ unbound_version }}"
     creates: "{{ unbound_temporary_directory }}/unbound-{{ unbound_version }}/Makefile"
