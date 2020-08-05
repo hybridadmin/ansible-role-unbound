@@ -4,7 +4,7 @@
     name: systemd-resolved
     state: stopped
     enabled: no
-    masked : yes
+    masked: yes
 
 - name: edit systemd-resolved conf
   replace:

@@ -64,12 +64,12 @@ _unbound_requirements:
 unbound_requirements: "{{ _unbound_requirements[ansible_os_family] | default(_unbound_requirements['default']) }}"
 
 config_sections:
-  - { name: "server_section" , value: 'server' }
-  - { name: "remote_control_section" , value: 'remote-control' }
-  - { name: "stub_zone_section" , value: 'stub-zone' }
-  - { name: "forward_zone_section" , value: 'forward-zone' }
-  - { name: "auth_zone_section" , value: 'auth-zone' }
-  - { name: "view_section" , value: 'view' }
-  - { name: "python_section" , value: 'python' }
-  - { name: "dnscrypt_section" , value: 'dnscrypt' }
-  - { name: "rpz_section" , value: 'rpz' }
+  - { name: "server_section", value: 'server' }
+  - { name: "remote_control_section", value: 'remote-control' }
+  - { name: "stub_zone_section", value: 'stub-zone' }
+  - { name: "forward_zone_section", value: 'forward-zone' }
+  - { name: "auth_zone_section", value: 'auth-zone' }
+  - { name: "view_section", value: 'view' }
+  - { name: "python_section", value: 'python' }
+  - { name: "dnscrypt_section", value: 'dnscrypt' }
+  - { name: "rpz_section", value: 'rpz' }

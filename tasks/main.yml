@@ -34,7 +34,7 @@
     name: unbound
     group: unbound
     system: yes
-  changed_when: false  
+  changed_when: false
 
 - name: flush handlers
   meta: flush_handlers
@@ -61,7 +61,7 @@
   check_mode: no
   changed_when: false
   failed_when: trust_anchors_setup.rc != 1 and trust_anchors_setup.rc != 0
-  
+
 - name: download root hints
   shell: |
     set -o pipefail
@@ -82,7 +82,7 @@
     - regexp: "@UNBOUND_RUN_DIR@"
     - regexp: "@UNBOUND_CHROOT_DIR@"
     - regexp: "@UNBOUND_PIDFILE@"
-  changed_when: false  
+  changed_when: false
   notify:
     - systemctl daemon-reload
 
@@ -107,7 +107,7 @@
 
 - name: flush handlers
   meta: flush_handlers
-  
+
 - name: Populate service facts
   shell: |
     set -o pipefail
@@ -120,7 +120,7 @@
 
 - name: disable systemd-resolved
   include: systemd-resolved.yml
-  when: (disable_systemd_resolved|bool == true) and ('enabled' in systemd_resolved_status.stdout)
+  when: (disable_systemd_resolved|bool is sameas true) and ('enabled' in systemd_resolved_status.stdout)
 
 - name: start and enable unbound
   systemd:

@@ -21,3 +21,4 @@
 
     - name: nslookup google.com
       command: nslookup google.com
+      changed_when: false
