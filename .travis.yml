@@ -1,7 +1,4 @@
 ---
-#
-# Ansible managed
-#
 language: python
 
 python:
@@ -12,7 +9,8 @@ services:
 
 env:
   global:
-    namespace="hybridadmin"
+#    namespace="hybridadmin"
+    - ROLE_NAME: unbound
   matrix:
     - MOLECULE_DISTRO: centos8
     - MOLECULE_DISTRO: centos7
@@ -26,11 +24,18 @@ cache:
 
 install:
   - pip install --upgrade pip
-  - pip install tox
-  - pip install yamllint ansible-lint
+#  - pip install tox
+  - pip install molecule docker yamllint ansible-lint
+
+before_script:
+#  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  - cd ../
+  - GALAXY_ROLE_NAME=$(echo "${ROLE_NAME}" | tr '-' '_')
+  - mv ansible-role-$ROLE_NAME hybridadmin.$GALAXY_ROLE_NAME
+  - cd hybridadmin.$GALAXY_ROLE_NAME
 
 script:
-  - tox
+  - molecule test
 
 notifications:
   webhooks: https://galaxy.ansible.com/api/v1/notifications/
