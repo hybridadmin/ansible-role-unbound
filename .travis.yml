@@ -13,8 +13,8 @@ env:
   - MOLECULE_DISTRO: centos7
   - MOLECULE_DISTRO: fedora32
   - MOLECULE_DISTRO: fedora31
-  - MOLECULE_DISTRO: ubuntu2004
-  - MOLECULE_DISTRO: ubuntu1804
+#  - MOLECULE_DISTRO: ubuntu2004
+#  - MOLECULE_DISTRO: ubuntu1804
 cache:
 - pip
 install:
