@@ -1,6 +1,5 @@
 ---
 # vars file for unbound
-disable_systemd_resolved: true
 
 _unbound_requirements:
   default:

@@ -127,21 +127,6 @@
 - name: flush handlers
   meta: flush_handlers
 
-#- name: Populate service facts
-#  shell: |
-#    set -o pipefail
-#    systemctl list-unit-files --no-pager --type service --all | grep -E 'systemd-resolved|^UNIT'
-#  args:
-#    executable: /bin/bash
-#  check_mode: no
-#  changed_when: false
-#  register: systemd_resolved_status
-
-#- name: disable systemd-resolved
-#  include: systemd-resolved.yml
-#  when: ('enabled' in systemd_resolved_status.stdout)
-#  when: (disable_systemd_resolved|bool == 'true') and ('enabled' in systemd_resolved_status.stdout)
-
 - name: start and enable unbound
   systemd:
     name: unbound
