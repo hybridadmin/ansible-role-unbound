@@ -1,0 +1,4 @@
+---
+- src: https://github.com/hybridadmin/ansible-role-unbound
+  version: master
+  name: hybridadmin.fancy_console
