@@ -5,5 +5,4 @@
   gather_facts: yes
 
   roles:
-    - role: hybridadmin.fancy_console
-#    - role: ansible-role-unbound
+    - role: ansible-role-unbound
