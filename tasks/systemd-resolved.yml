@@ -5,6 +5,7 @@
     state: stopped
     enabled: no
     masked: yes
+  changed_when: false
 
 - name: edit systemd-resolved conf
   replace:
@@ -15,6 +16,12 @@
     - { name: "^((#|)DNS=.*)", value: "DNS=127.0.0.1" }
     - { name: "^((#|)MulticastDNS=.*)", value: "MulticastDNS=no" }
     - { name: "^((#|)DNSStubListener=.*)", value: "DNSStubListener=no" }
+  changed_when: false
+
+- name: check network manager conf exists
+  stat:
+    path: /etc/NetworkManager/NetworkManager.conf
+  register: nmconf
 
 - name: edit networkmanager conf
   lineinfile:
@@ -25,4 +32,6 @@
   loop:
     - { name: "^((#|)dns=.*)", value: "dns=none" }
     - { name: "^((#|)systemd-resolved=.*)", value: "systemd-resolved=false" }
-  when: ansible_os_family == 'RedHat'
+  when:
+  - ansible_os_family == 'RedHat'
+  - nmconf.stat.exists
