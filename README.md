@@ -58,25 +58,17 @@ unbound_port: 53
 unbound_settings:
   server_section:
     access-control: "0.0.0.0/0 allow"
-    do-ip4: "yes"
     do-ip6: "no"
-    do-udp: "yes"
-    do-tcp: "yes"
     chroot: ""
-    username: "unbound"
     aggressive-nsec: "yes"
     cache-max-ttl: 14400
     cache-min-ttl: 1200
     hide-identity: "yes"
     hide-version: "yes"
-    interface: 0.0.0.0
     prefetch: "yes"
-    rrset-roundrobin: "yes"
     use-caps-for-id: "yes"
-    verbosity: 3
+    verbosity: 1
     deny-any: "yes"
-    harden-glue: "yes"
-    harden-dnssec-stripped: "yes"
     log-queries: "yes"
     root-hints: "/usr/local/etc/unbound/named.root"
     trust-anchor-file: "/usr/local/etc/unbound/root.key"
@@ -91,15 +83,10 @@ unbound_settings:
     num-queries-per-thread: 4096
     so-rcvbuf: 4m
     so-sndbuf: 4m
-    so-reuseport: "yes"
     ratelimit: 1000
     ratelimit-size: 1m
   remote_control_section:
-    control-enable: "yes"
-    server-key-file: "/usr/local/etc/unbound/unbound_server.key"
-    server-cert-file: "/usr/local/etc/unbound/unbound_server.pem"
-    control-key-file: "/usr/local/etc/unbound/unbound_control.key"
-    control-cert-file: "/usr/local/etc/unbound/unbound_control.pem"  
+    control-enable: "yes"  
 ```
 
 ## Requirements
