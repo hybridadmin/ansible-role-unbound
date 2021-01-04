@@ -1,10 +1,27 @@
 ---
 # tasks file for unbound
+
+- name: Wait for systemd to complete initialization. # noqa 303
+  command: systemctl is-system-running
+  register: systemctl_status
+  until: "'running' in systemctl_status.stdout"
+  retries: 30
+  delay: 5
+  when: ansible_service_mgr == 'systemd'
+  changed_when: false
+
 - name: update apt cache
   apt:
     update_cache: yes
   changed_when: false
   when: ansible_os_family == 'Debian'
+
+- name: install fedora required packages
+  package:
+    name:
+      - procps-ng
+    state: present
+  when: ansible_distribution == 'Fedora'
 
 - name: Populate service facts
   shell: |
@@ -15,6 +32,47 @@
   check_mode: no
   changed_when: false
   register: systemd_resolved_status
+
+- name: add custom config files
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: "{{ item.mode }}"
+    force: yes
+  loop: "{{ config_templates }}"
+
+- name: Fix windows CR/LF line endings in config files
+  replace:
+    path: "{{ item.dest }}"
+    regexp: "\r"
+  loop: "{{ config_templates }}"
+
+- name: Reload sysctl
+  shell: |
+    set -o pipefail
+    sysctl -p /etc/sysctl.d/99-unbound-sysctl.conf
+  args:
+      executable: /bin/bash
+  become: true
+  changed_when: false
+  ignore_errors: yes
+
+- name: Increase max open files for system/users
+  lineinfile:
+    path: "{{ item.name }}"
+    regexp: "DefaultLimitNOFILE"
+    line: DefaultLimitNOFILE=256000:1000000
+    state: present
+  loop:
+    - { name: "/etc/systemd/system.conf" }
+    - { name: "/etc/systemd/user.conf" }
+
+#- name: Increase max open files in /etc/systemd/user.conf
+#  lineinfile:
+#    path: /etc/systemd/user.conf
+#    regexp: "DefaultLimitNOFILE"
+#    line: DefaultLimitNOFILE=256000:1000000
+#    state: present
 
 - name: disable systemd-resolved
   include: systemd-resolved.yml
@@ -62,7 +120,7 @@
 - name: run unbound-control-setup
   shell: |
     set -o pipefail
-    /usr/local/sbin/unbound-control-setup
+    {{ unbound_bin_dir }}/unbound-control-setup
   args:
     executable: /bin/bash
   register: control_key_setup
@@ -72,7 +130,7 @@
 - name: run unbound-anchor
   shell: |
     set -o pipefail
-    /usr/local/sbin/unbound-anchor -v
+    {{ unbound_bin_dir }}/unbound-anchor -v
   environment:
     LD_LIBRARY_PATH: /usr/local/lib
   args:
@@ -85,7 +143,7 @@
 - name: download root hints
   shell: |
     set -o pipefail
-    wget http://www.internic.net/domain/named.root -O /usr/local/etc/unbound/named.root
+    wget http://www.internic.net/domain/named.root -O "{{ unbound_config_dir }}/unbound/named.root"
   args:
     executable: /bin/bash
   check_mode: no
@@ -98,7 +156,7 @@
     replace: "{{ item.replace | default(omit) }}"
   loop:
     - regexp: "@UNBOUND_SBIN_DIR@"
-      replace: /usr/local/sbin
+      replace: "{{ unbound_bin_dir }}"
     - regexp: "@UNBOUND_RUN_DIR@"
     - regexp: "@UNBOUND_CHROOT_DIR@"
     - regexp: "@UNBOUND_PIDFILE@"
@@ -120,8 +178,9 @@
 - name: configure unbound
   template:
     src: unbound.conf.j2
-    dest: /usr/local/etc/unbound/unbound.conf
-    validate: /usr/local/sbin/unbound-checkconf %s
+    dest: "{{ unbound_config_dir }}/unbound/unbound.conf"
+    mode: "0644"
+    validate: "{{ unbound_bin_dir }}/unbound-checkconf %s"
   notify:
     - restart unbound
 

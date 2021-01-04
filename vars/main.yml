@@ -1,6 +1,10 @@
 ---
 # vars file for unbound
 
+config_templates:
+  - {src: "99-unbound-sysctl.conf.j2", dest: "/etc/sysctl.d/99-unbound-sysctl.conf", mode: "0644"}
+  - {src: "99-unbound-limits.conf.j2", dest: "/etc/security/limits.d/99-unbound-limits.conf", mode: "0644"}
+
 _unbound_requirements:
   default:
     - gcc

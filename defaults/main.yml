@@ -2,7 +2,7 @@
 # defaults file for unbound
 
 # What version to download/install.
-unbound_version: 1.12.0
+unbound_version: 1.13.0
 
 # Where to unpack unbound.
 unbound_temporary_directory: /tmp
@@ -13,36 +13,47 @@ unbound_interface: 127.0.0.1
 # The port to listen on.
 unbound_port: 53
 
+# unbound config/executable directories
+unbound_config_dir: /usr/local/etc
+unbound_bin_dir: /usr/local/sbin
+
 # configuration file settings
+num_cores: "{{ [ansible_processor_cores, ansible_processor_count, ansible_processor_vcpus] | max | int }}"
+total_ram_mb: "{{ ansible_memtotal_mb }}"
+msg_cache_mb: 256
+
 unbound_settings:
   server_section:
     access-control: "0.0.0.0/0 allow"
     do-ip6: "no"
     chroot: ""
     aggressive-nsec: "yes"
-    cache-max-ttl: 14400
-    cache-min-ttl: 1200
+    cache-max-ttl: 86400
+    cache-min-ttl: 600
     hide-identity: "yes"
     hide-version: "yes"
     prefetch: "yes"
     use-caps-for-id: "yes"
-    verbosity: 1
+    verbosity: 0
     deny-any: "yes"
+    edns-buffer-size: 1472
     log-queries: "yes"
-    root-hints: "/usr/local/etc/unbound/named.root"
-    trust-anchor-file: "/usr/local/etc/unbound/root.key"
-    num-threads: 4
-    msg-cache-slabs: 4
-    rrset-cache-slabs: 4
-    infra-cache-slabs: 4
-    key-cache-slabs: 4
-    msg-cache-size: 256M
-    rrset-cache-size: 512M
+    root-hints: "{{ unbound_config_dir }}/unbound/named.root"
+    trust-anchor-file: "{{ unbound_config_dir }}/unbound/root.key"
+    num-threads: "{{ (num_cores | int) * 2 }}"
+    msg-cache-slabs: "{{ (num_cores | int) * 2 }}"
+    rrset-cache-slabs: "{{ (num_cores | int) * 2 }}"
+    infra-cache-slabs: "{{ (num_cores | int) * 2 }}"
+    key-cache-slabs:  "{{ (num_cores | int) * 2 }}"
+    msg-cache-size: "{{ msg_cache_mb }}M"
+    rrset-cache-size: "{{ msg_cache_mb * 2 }}M"
     outgoing-range: 8192
     num-queries-per-thread: 4096
     so-rcvbuf: 4m
     so-sndbuf: 4m
-    ratelimit: 1000
-    ratelimit-size: 1m
+    unwanted-reply-threshold: 10000
+    val-clean-additional: "yes"
+    qname-minimisation: "yes"
+    so-reuseport: "yes"
   remote_control_section:
     control-enable: "yes"

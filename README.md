@@ -54,6 +54,8 @@ unbound_interface: 127.0.0.1
 # The port to listen on.
 unbound_port: 53
 
+unbound_config_dir: /usr/local/etc
+
 # configuration file settings
 unbound_settings:
   server_section:
@@ -70,8 +72,8 @@ unbound_settings:
     verbosity: 1
     deny-any: "yes"
     log-queries: "yes"
-    root-hints: "/usr/local/etc/unbound/named.root"
-    trust-anchor-file: "/usr/local/etc/unbound/root.key"
+    root-hints: "{{ unbound_config_dir }}/unbound/named.root"
+    trust-anchor-file: "{{ unbound_config_dir }}/unbound/root.key"
     num-threads: 4
     msg-cache-slabs: 4
     rrset-cache-slabs: 4
