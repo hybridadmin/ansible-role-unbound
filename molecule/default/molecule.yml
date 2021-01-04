@@ -25,5 +25,6 @@ provisioner:
       callback_whitelist: profile_tasks
       stdout_callback: yaml
       bin_ansible_callbacks: yes
+      verbosity: 1
 verifier:
   name: ansible
