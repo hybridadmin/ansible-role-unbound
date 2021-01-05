@@ -69,13 +69,6 @@
     - { name: "/etc/systemd/system.conf" }
     - { name: "/etc/systemd/user.conf" }
 
-#- name: Increase max open files in /etc/systemd/user.conf
-#  lineinfile:
-#    path: /etc/systemd/user.conf
-#    regexp: "DefaultLimitNOFILE"
-#    line: DefaultLimitNOFILE=256000:1000000
-#    state: present
-
 - name: disable systemd-resolved
   include: systemd-resolved.yml
   when: ('enabled' in systemd_resolved_status.stdout)
