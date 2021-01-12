@@ -12,19 +12,6 @@
   when: (ansible_service_mgr == 'systemd' and ansible_distribution == 'Fedora')
   changed_when: false
 
-- name: update apt cache
-  apt:
-    update_cache: yes
-  changed_when: false
-  when: ansible_os_family == 'Debian'
-
-- name: install fedora required packages
-  package:
-    name:
-      - procps-ng
-    state: present
-  when: ansible_distribution == 'Fedora'
-
 - name: Populate service facts
   shell: |
     set -o pipefail
@@ -34,6 +21,75 @@
   check_mode: no
   changed_when: false
   register: systemd_resolved_status
+
+- name: disable systemd-resolved
+  include: systemd-resolved.yml
+  when: ('enabled' in systemd_resolved_status.stdout)
+
+- name: install requirements
+  action: >
+    {{ ansible_pkg_mgr }} name={{ unbound_requirements }} state=present update_cache=yes
+  register: unbound_install_requirements
+  until: unbound_install_requirements is succeeded
+  retries: 3
+
+- name: download archive
+  unarchive:
+    src: "https://nlnetlabs.nl/downloads/unbound/unbound-{{ unbound_version }}.tar.gz"
+    dest: "{{ unbound_temporary_directory }}"
+    list_files: yes
+    remote_src: yes
+    creates: "{{ unbound_temporary_directory }}/unbound-{{ unbound_version }}"
+  register: unbound_download_archive
+  until: unbound_download_archive is succeeded
+  retries: 3
+  notify:
+    - configure
+    - make
+    - make install
+    - install service
+
+- name: make group unbound
+  group:
+    name: unbound
+    system: yes
+    gid: 88
+
+- name: make user unbound
+  user:
+    name: unbound
+    home: "{{ unbound_config_dir }}"
+    group: unbound
+    system: yes
+    uid: 88
+    shell: /bin/false
+  changed_when: false
+
+- name: flush handlers
+  meta: flush_handlers
+
+- name: "checking directories exist"
+  stat:
+    path: "{{ item }}"
+  register: folder_stats
+  loop: "{{ required_dirs }}"
+
+- name: "creating required directories"
+  file:
+    path: "{{ item.item.name }}"
+    state: directory
+    mode: "{{ item.item.perms }}"
+    group: root
+    owner: root
+  when: not item.stat.exists
+  loop: "{{ folder_stats.results }}"
+
+- name: Make sure that *.conf files are included in unbound.conf
+  lineinfile:
+    path: "{{ unbound_config_dir }}/unbound.conf"
+    state: present
+    regexp: '^include:.\*\.conf\"$'
+    line: 'include: "{{ unbound_confd_dir }}/*.conf"'
 
 - name: add custom config files
   template:
@@ -69,49 +125,6 @@
     - { name: "/etc/systemd/system.conf" }
     - { name: "/etc/systemd/user.conf" }
 
-- name: disable systemd-resolved
-  include: systemd-resolved.yml
-  when: ('enabled' in systemd_resolved_status.stdout)
-
-- name: install requirements
-  package:
-    name: "{{ unbound_requirements }}"
-    state: present
-  register: unbound_install_requirements
-  until: unbound_install_requirements is succeeded
-  retries: 3
-
-- name: download archive
-  unarchive:
-    src: "https://nlnetlabs.nl/downloads/unbound/unbound-{{ unbound_version }}.tar.gz"
-    dest: "{{ unbound_temporary_directory }}"
-    list_files: yes
-    remote_src: yes
-    creates: "{{ unbound_temporary_directory }}/unbound-{{ unbound_version }}"
-  register: unbound_download_archive
-  until: unbound_download_archive is succeeded
-  retries: 3
-  notify:
-    - configure
-    - make
-    - make install
-    - install service
-
-- name: make group unbound
-  group:
-    name: unbound
-    system: yes
-
-- name: make user unbound
-  user:
-    name: unbound
-    group: unbound
-    system: yes
-  changed_when: false
-
-- name: flush handlers
-  meta: flush_handlers
-
 - name: run unbound-control-setup
   shell: |
     set -o pipefail
@@ -138,7 +151,7 @@
 - name: download root hints
   shell: |
     set -o pipefail
-    wget http://www.internic.net/domain/named.root -O "{{ unbound_config_dir }}/unbound/named.root"
+    wget https://www.internic.net/domain/named.root -O "{{ unbound_config_dir }}/named.root"
   args:
     executable: /bin/bash
   check_mode: no
@@ -173,7 +186,7 @@
 - name: configure unbound
   template:
     src: unbound.conf.j2
-    dest: "{{ unbound_config_dir }}/unbound/unbound.conf"
+    dest: "{{ unbound_confd_dir }}/99-custom-unbound.conf"
     mode: "0644"
     validate: "{{ unbound_bin_dir }}/unbound-checkconf %s"
   notify:

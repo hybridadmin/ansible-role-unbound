@@ -1,6 +1,15 @@
 ---
 # vars file for unbound
 
+# unbound config/executable directories
+unbound_config_dir: /usr/local/etc/unbound
+unbound_bin_dir: /usr/local/sbin
+unbound_lib_dir: /var/lib/unbound
+unbound_confd_dir: "{% if 'Redhat' in ansible_os_family %}{{ unbound_config_dir }}/conf.d{% else %}{{ unbound_config_dir }}/unbound.conf.d{% endif %}"
+
+required_dirs:
+  - {name: "{{ unbound_confd_dir }}", perms: "0755"}
+
 config_templates:
   - {src: "99-unbound-sysctl.conf.j2", dest: "/etc/sysctl.d/99-unbound-sysctl.conf", mode: "0644"}
   - {src: "99-unbound-limits.conf.j2", dest: "/etc/security/limits.d/99-unbound-limits.conf", mode: "0644"}
@@ -41,6 +50,7 @@ _unbound_requirements:
     - libudev-dev
     - pkg-config
     - libevent-dev
+    - procps
   RedHat:
     - gcc
     - make
@@ -52,6 +62,7 @@ _unbound_requirements:
     - openssl-devel
     - systemd-devel
     - libevent-devel
+    - procps-ng
   Suse:
     - gcc
     - make  

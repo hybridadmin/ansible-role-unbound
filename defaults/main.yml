@@ -13,10 +13,6 @@ unbound_interface: 127.0.0.1
 # The port to listen on.
 unbound_port: 53
 
-# unbound config/executable directories
-unbound_config_dir: /usr/local/etc
-unbound_bin_dir: /usr/local/sbin
-
 # configuration file settings
 num_cores: "{{ [ansible_processor_cores, ansible_processor_count, ansible_processor_vcpus] | max | int }}"
 total_ram_mb: "{{ ansible_memtotal_mb }}"
@@ -38,8 +34,8 @@ unbound_settings:
     deny-any: "yes"
     edns-buffer-size: 1472
     log-queries: "yes"
-    root-hints: "{{ unbound_config_dir }}/unbound/named.root"
-    trust-anchor-file: "{{ unbound_config_dir }}/unbound/root.key"
+    root-hints: "{{ unbound_config_dir }}/named.root"
+    trust-anchor-file: "{{ unbound_config_dir }}/root.key"
     num-threads: "{{ (num_cores | int) * 2 }}"
     msg-cache-slabs: "{{ (num_cores | int) * 2 }}"
     rrset-cache-slabs: "{{ (num_cores | int) * 2 }}"
