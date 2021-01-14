@@ -15,10 +15,11 @@
 - name: Populate service facts
   shell: |
     set -o pipefail
-    systemctl list-unit-files --no-pager --type service --all | grep -E 'systemd-resolved|^UNIT'
+    systemctl is-enabled systemd-resolved
   args:
     executable: /bin/bash
   check_mode: no
+  failed_when: systemd_resolved_status.rc >= 2
   changed_when: false
   register: systemd_resolved_status
 
@@ -26,178 +27,31 @@
   include: systemd-resolved.yml
   when: ('enabled' in systemd_resolved_status.stdout)
 
-- name: install requirements
-  action: >
-    {{ ansible_pkg_mgr }} name={{ unbound_requirements }} state=present update_cache=yes
-  register: unbound_install_requirements
-  until: unbound_install_requirements is succeeded
-  retries: 3
+- name: start install
+  include: install.yml
 
-- name: download archive
-  unarchive:
-    src: "https://nlnetlabs.nl/downloads/unbound/unbound-{{ unbound_version }}.tar.gz"
-    dest: "{{ unbound_temporary_directory }}"
-    list_files: yes
-    remote_src: yes
-    creates: "{{ unbound_temporary_directory }}/unbound-{{ unbound_version }}"
-  register: unbound_download_archive
-  until: unbound_download_archive is succeeded
-  retries: 3
-  notify:
-    - configure
-    - make
-    - make install
-    - install service
+- name: start configure
+  include: configure.yml
 
-- name: make group unbound
-  group:
-    name: unbound
-    system: yes
-    gid: 88
-
-- name: make user unbound
-  user:
-    name: unbound
-    home: "{{ unbound_config_dir }}"
-    group: unbound
-    system: yes
-    uid: 88
-    shell: /bin/false
-  changed_when: false
+- name: start ssl config
+  include: ssl-certs.yml
+  when: enable_dot or enable_doh
 
 - name: flush handlers
   meta: flush_handlers
 
-- name: "checking directories exist"
-  stat:
-    path: "{{ item }}"
-  register: folder_stats
-  loop: "{{ required_dirs }}"
+- name: start doh/dot config
+  include: doh-dot-server.yml
+  when: enable_dot or enable_doh
 
-- name: "creating required directories"
-  file:
-    path: "{{ item.item.name }}"
-    state: directory
-    mode: "{{ item.item.perms }}"
-    group: root
-    owner: root
-  when: not item.stat.exists
-  loop: "{{ folder_stats.results }}"
+- name: start dnscrypt config
+  include: dnscrypt.yml
+  when: enable_dnscrypt
 
-- name: Make sure that *.conf files are included in unbound.conf
-  lineinfile:
-    path: "{{ unbound_config_dir }}/unbound.conf"
-    state: present
-    regexp: '^include:.\*\.conf\"$'
-    line: 'include: "{{ unbound_confd_dir }}/*.conf"'
-
-- name: add custom config files
-  template:
-    src: "{{ item.src }}"
-    dest: "{{ item.dest }}"
-    mode: "{{ item.mode }}"
-    force: yes
-  loop: "{{ config_templates }}"
-
-- name: Fix windows CR/LF line endings in config files
-  replace:
-    path: "{{ item.dest }}"
-    regexp: "\r"
-  loop: "{{ config_templates }}"
-
-- name: Reload sysctl
-  shell: |
-    set -o pipefail
-    sysctl -p /etc/sysctl.d/99-unbound-sysctl.conf
-  args:
-      executable: /bin/bash
-  become: true
-  changed_when: false
-  ignore_errors: yes
-
-- name: Increase max open files for system/users
-  lineinfile:
-    path: "{{ item.name }}"
-    regexp: "DefaultLimitNOFILE"
-    line: DefaultLimitNOFILE=256000:1000000
-    state: present
-  loop:
-    - { name: "/etc/systemd/system.conf" }
-    - { name: "/etc/systemd/user.conf" }
-
-- name: run unbound-control-setup
-  shell: |
-    set -o pipefail
-    {{ unbound_bin_dir }}/unbound-control-setup
-  args:
-    executable: /bin/bash
-  register: control_key_setup
-  check_mode: no
-  changed_when: false
-
-- name: run unbound-anchor
-  shell: |
-    set -o pipefail
-    {{ unbound_bin_dir }}/unbound-anchor -v
-  environment:
-    LD_LIBRARY_PATH: /usr/local/lib
-  args:
-    executable: /bin/bash
-  register: trust_anchors_setup
-  check_mode: no
-  changed_when: false
-  failed_when: trust_anchors_setup.rc != 1 and trust_anchors_setup.rc != 0
-
-- name: download root hints
-  shell: |
-    set -o pipefail
-    wget https://www.internic.net/domain/named.root -O "{{ unbound_config_dir }}/named.root"
-  args:
-    executable: /bin/bash
-  check_mode: no
-  changed_when: false
-
-- name: replace values in service file
-  replace:
-    path: /etc/systemd/system/unbound.service
-    regexp: "{{ item.regexp }}"
-    replace: "{{ item.replace | default(omit) }}"
-  loop:
-    - regexp: "@UNBOUND_SBIN_DIR@"
-      replace: "{{ unbound_bin_dir }}"
-    - regexp: "@UNBOUND_RUN_DIR@"
-    - regexp: "@UNBOUND_CHROOT_DIR@"
-    - regexp: "@UNBOUND_PIDFILE@"
-  changed_when: false
-  notify:
-    - systemctl daemon-reload
-
-- name: comment lines in service file
-  replace:
-    path: /etc/systemd/system/unbound.service
-    regexp: "^({{ item }}.*)"
-    replace: '#\1'
-  changed_when: false
-  loop:
-    - CapabilityBoundingSet
-    - ProtectSystem
-    - SystemCallFilter
-
-- name: configure unbound
-  template:
-    src: unbound.conf.j2
-    dest: "{{ unbound_confd_dir }}/99-custom-unbound.conf"
-    mode: "0644"
-    validate: "{{ unbound_bin_dir }}/unbound-checkconf %s"
-  notify:
-    - restart unbound
-
-- name: flush handlers
-  meta: flush_handlers
-
-- name: start and enable unbound
+- name: restart unbound to enable all settings
   systemd:
     name: unbound
-    state: started
+    state: restarted
     enabled: yes
     daemon_reload: yes
+  changed_when: false

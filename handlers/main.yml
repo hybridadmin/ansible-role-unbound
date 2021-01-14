@@ -1,7 +1,7 @@
 ---
 # handlers file for unbound
 - name: configure
-  command: ./configure --enable-systemd --with-libevent
+  command: ./configure {{ unbound_build_cmd }}
   args:
     chdir: "{{ unbound_temporary_directory }}/unbound-{{ unbound_version }}"
     creates: "{{ unbound_temporary_directory }}/unbound-{{ unbound_version }}/Makefile"
@@ -33,3 +33,4 @@
     name: unbound
     state: restarted
     daemon_reload: yes
+    enabled: yes

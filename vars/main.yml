@@ -1,18 +1,35 @@
 ---
 # vars file for unbound
 
+enable_dot: true
+enable_doh: true
+enable_dnscrypt: true
+
 # unbound config/executable directories
 unbound_config_dir: /usr/local/etc/unbound
-unbound_bin_dir: /usr/local/sbin
+#unbound_bin_dir: /usr/local/sbin
 unbound_lib_dir: /var/lib/unbound
+unbound_bin_dir: "{% if '/etc/unbound' == unbound_config_dir %}/usr/sbin{% else %}/usr/local/sbin{% endif %}"
 unbound_confd_dir: "{% if 'Redhat' in ansible_os_family %}{{ unbound_config_dir }}/conf.d{% else %}{{ unbound_config_dir }}/unbound.conf.d{% endif %}"
 
+_unbound_build_cmd: " --enable-systemd --with-libevent --enable-dnscrypt --with-libnghttp2"
+unbound_build_cmd: "{% if '/etc/unbound' == unbound_config_dir %}{{ _unbound_build_cmd }} --prefix=/usr --sysconfdir=/etc --with-pidfile=/run/unbound.pid{% else %}{{ _unbound_build_cmd }}{% endif %}"
+
+ld_library_path: "{% if '/etc/unbound' == unbound_config_dir %}/usr/lib{% else %}/usr/local/lib{% endif %}"
+
+unbound_dnscrypt_dir: "{{ unbound_config_dir }}/dnscrypt"
+
 required_dirs:
-  - {name: "{{ unbound_confd_dir }}", perms: "0755"}
+  - {path: "{{ unbound_confd_dir }}", perms: "0755", owner: "unbound", group: "unbound"}
+  - {path: "/var/log/unbound", perms: "0755", owner: "unbound", group: "unbound"}
+  - {path: "{{ unbound_dnscrypt_dir }}", perms: "0755", owner: "unbound", group: "unbound"}
 
 config_templates:
-  - {src: "99-unbound-sysctl.conf.j2", dest: "/etc/sysctl.d/99-unbound-sysctl.conf", mode: "0644"}
-  - {src: "99-unbound-limits.conf.j2", dest: "/etc/security/limits.d/99-unbound-limits.conf", mode: "0644"}
+  - {src: "sysctl.d/99-unbound-sysctl.conf.j2", dest: "/etc/sysctl.d/99-unbound-sysctl.conf", mode: "0644"}
+  - {src: "limits.d/99-unbound-limits.conf.j2", dest: "/etc/security/limits.d/99-unbound-limits.conf", mode: "0644"}
+
+letsencrypt_ssl_certs:
+  - { fqdn: "{{ ssl_tls_hostname }}", privkey: "/etc/letsencrypt/live/{{ ssl_tls_hostname }}/privkey.pem", cert: "/etc/letsencrypt/live/{{ ssl_tls_hostname }}/fullchain.pem" }
 
 _unbound_requirements:
   default:
@@ -21,61 +38,46 @@ _unbound_requirements:
     - openssl
     - wget
     - diffutils
-    - libexpat1-dev
-    - file
-    - libssl-dev
-    - libsystemd-dev
-    - libudev-dev
+    - git
+    - autoconf
   Alpine:
-    - gcc
-    - make
-    - openssl
-    - wget    
-    - diffutils
     - expat-dev
     - file
     - openssl-dev
     - systemd-dev
     - libevent-dev
+    - nghttp2-dev
+    - libsodium-dev
   Debian:
-    - gcc
-    - make
-    - autoconf
-    - openssl
-    - wget
     - libsystemd-dev
-    - diffutils
     - libexpat1-dev
     - libssl-dev
     - libudev-dev
     - pkg-config
     - libevent-dev
     - procps
+    - libnghttp2-dev
+    - libsodium-dev
+    - apparmor
   RedHat:
-    - gcc
-    - make
-    - openssl
-    - wget    
-    - diffutils
     - expat-devel
     - file
     - openssl-devel
     - systemd-devel
     - libevent-devel
     - procps-ng
+    - libnghttp2-devel
+    - libsodium-devel
   Suse:
-    - gcc
-    - make  
-    - openssl
-    - wget    
-    - diffutils
     - libexpat-devel
     - file
     - openssl-devel
     - systemd-devel
     - libevent-devel
+    - libnghttp2-devel
+    - libsodium-devel
 
-unbound_requirements: "{{ _unbound_requirements[ansible_os_family] | default(_unbound_requirements['default']) }}"
+unbound_requirements: "{{ _unbound_requirements[ansible_os_family] + _unbound_requirements['default'] }}"
 
 config_sections:
   - { name: "server_section", value: 'server' }

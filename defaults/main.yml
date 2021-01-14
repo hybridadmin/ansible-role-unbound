@@ -13,13 +13,18 @@ unbound_interface: 127.0.0.1
 # The port to listen on.
 unbound_port: 53
 
+# SSL settings
+ssl_tls_hostname: dns-server.com
+
 # configuration file settings
 num_cores: "{{ [ansible_processor_cores, ansible_processor_count, ansible_processor_vcpus] | max | int }}"
 total_ram_mb: "{{ ansible_memtotal_mb }}"
 msg_cache_mb: 256
+num_queries_per_thread: 4096
 
 unbound_settings:
   server_section:
+    interface: "{{ unbound_interface }}@53"
     access-control: "0.0.0.0/0 allow"
     do-ip6: "no"
     chroot: ""
@@ -34,8 +39,9 @@ unbound_settings:
     deny-any: "yes"
     edns-buffer-size: 1472
     log-queries: "yes"
-    root-hints: "{{ unbound_config_dir }}/named.root"
+    root-hints: "{{ unbound_config_dir }}/root.hints"
     trust-anchor-file: "{{ unbound_config_dir }}/root.key"
+    logfile: "/var/log/unbound/unbound.log"
     num-threads: "{{ (num_cores | int) * 2 }}"
     msg-cache-slabs: "{{ (num_cores | int) * 2 }}"
     rrset-cache-slabs: "{{ (num_cores | int) * 2 }}"
@@ -43,8 +49,8 @@ unbound_settings:
     key-cache-slabs:  "{{ (num_cores | int) * 2 }}"
     msg-cache-size: "{{ msg_cache_mb }}M"
     rrset-cache-size: "{{ msg_cache_mb * 2 }}M"
-    outgoing-range: 8192
-    num-queries-per-thread: 4096
+    outgoing-range: "{{ (num_queries_per_thread | int) * 2 }}"
+    num-queries-per-thread: "{{ num_queries_per_thread }}"
     so-rcvbuf: 4m
     so-sndbuf: 4m
     unwanted-reply-threshold: 10000

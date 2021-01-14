@@ -1,0 +1,69 @@
+---
+
+- name: install requirements
+  action: >
+    {{ ansible_pkg_mgr }} name={{ unbound_requirements }} state=present update_cache=yes
+  register: unbound_install_requirements
+  until: unbound_install_requirements is succeeded
+  retries: 3
+
+# https://b4d.sablun.org/blog/2018-09-27-when-unbound-wont-write-logs/
+- name: apply apparmor fix for unbound
+  template:
+    src: "apparmor.d/usr.sbin.unbound.j2"
+    dest: "/etc/apparmor.d/local/usr.sbin.unbound"
+    mode: 0644
+    validate: apparmor_parser -r %s
+  when: (ansible_os_family == 'Debian' and ansible_virtualization_type != "docker")
+
+- name: download archive
+  unarchive:
+    src: "https://nlnetlabs.nl/downloads/unbound/unbound-{{ unbound_version }}.tar.gz"
+    dest: "{{ unbound_temporary_directory }}"
+    list_files: yes
+    remote_src: yes
+    creates: "{{ unbound_temporary_directory }}/unbound-{{ unbound_version }}"
+  register: unbound_download_archive
+  until: unbound_download_archive is succeeded
+  retries: 3
+  notify:
+    - configure
+    - make
+    - make install
+    - install service
+
+- name: create group unbound
+  group:
+    name: unbound
+    system: yes
+    gid: 88
+
+- name: create user unbound
+  user:
+    name: unbound
+    home: "{{ unbound_lib_dir }}"
+    comment: "Unbound DNS resolver"
+    group: unbound
+    system: yes
+    uid: 88
+    shell: /bin/false
+  changed_when: false
+
+- name: flush handlers
+  meta: flush_handlers
+
+- name: "checking directories exist"
+  stat:
+    path: "{{ item }}"
+  register: folder_stats
+  loop: "{{ required_dirs }}"
+
+- name: "creating required directories"
+  file:
+    path: "{{ item.item.path }}"
+    state: directory
+    mode: "{{ item.item.perms }}"
+    group: "{{ item.item.group }}"
+    owner: "{{ item.item.owner }}"
+  when: not item.stat.exists
+  loop: "{{ folder_stats.results }}"

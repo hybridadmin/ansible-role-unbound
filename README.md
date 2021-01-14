@@ -70,7 +70,7 @@ unbound_settings:
     verbosity: 1
     deny-any: "yes"
     log-queries: "yes"
-    root-hints: "{{ unbound_config_dir }}/named.root"
+    root-hints: "{{ unbound_config_dir }}/root.hints"
     trust-anchor-file: "{{ unbound_config_dir }}/root.key"
     num-threads: 4
     msg-cache-slabs: 4

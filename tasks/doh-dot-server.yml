@@ -1,0 +1,22 @@
+---
+
+- name: enable DNS over TLS
+  blockinfile:
+    path: "{{ unbound_confd_dir }}/99-custom-unbound.conf"
+#    insertafter: 'inter.*:\s127.*.1@53'
+    insertafter: 'inter.*:\s\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}@53'
+    block: |2
+          tls-service-key: "/etc/letsencrypt/live/{{ ssl_tls_hostname }}/privkey.pem"
+          tls-service-pem: "/etc/letsencrypt/live/{{ ssl_tls_hostname }}/fullchain.pem"
+          interface: {{ unbound_interface }}@853
+          tls-port: 853
+  when: enable_dot
+  changed_when: false
+
+- name: Enable DNS over HTTPS
+  lineinfile:
+    path: "{{ unbound_confd_dir }}/99-custom-unbound.conf"
+    insertbefore: 'access-con.*:.*'
+    line: "    interface: {{ unbound_interface }}@443"
+  when: enable_doh
+  changed_when: false

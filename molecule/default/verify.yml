@@ -5,20 +5,61 @@
   gather_facts: yes
 
   vars:
-    _nslookup_package:
+    dns_client_version: 1.4.4
+    server_fqdn: "dns-server.com"
+    doh_endpoint: "doh.{{ server_fqdn }}"
+    dot_endpoint: "dot.{{ server_fqdn }}"
+    _required_packages:
       default:
-        - bind-utils
+        - jq
+        - curl
+        - net-tools
       Debian:
-        - dnsutils
+        - knot-dnsutils
+      RedHat:
+        - knot-utils
+        - bind-utils
 
-    nslookup_package: "{{ _nslookup_package[ansible_os_family] | default(_nslookup_package['default']) }}"
+    required_packages: "{{ _required_packages[ansible_os_family] + _required_packages['default'] }}"
 
   tasks:
-    - name: install nslookup
+    - name: install required packages
       package:
-        name: "{{ nslookup_package }}"
+        name: "{{ required_packages }}"
         state: present
 
-    - name: nslookup google.com
-      command: nslookup google.com 127.0.0.1
+    - name: run netstat command during verify
+      command: netstat -ntplu
       changed_when: false
+      
+    #https://github.com/ameshkov/dnslookup
+    - name: Setup DNS Client
+      block:
+        - name: Download dnslookup client version {{ dns_client_version }}
+          get_url:
+            url: https://github.com/ameshkov/dnslookup/releases/download/v{{ dns_client_version }}/dnslookup-linux-amd64-v{{ dns_client_version }}.tar.gz
+            dest: /tmp/dnslookup-v{{ dns_client_version }}.tar.gz
+            mode: "0644"
+            force: yes
+          changed_when: false
+
+        - name: Unpack dnslookup client version {{ dns_client_version }}
+          unarchive:
+            src: /tmp/dnslookup-v{{ dns_client_version }}.tar.gz
+            dest: /tmp
+            remote_src: yes
+          changed_when: false
+
+        - name: Dns lookups (Normal/DOT/DOH)
+          shell: |
+            set -o pipefail
+            {{ item}}
+          args:
+            executable: /bin/bash
+          become: true
+          changed_when: false
+          with_items:
+            - "kdig gmail.com @127.0.0.1"
+            - "VERIFY=0 /tmp/linux-amd64/dnslookup example.org tls://{{ dot_endpoint }} 127.0.0.1"
+            - "VERIFY=0 /tmp/linux-amd64/dnslookup example.org https://{{ doh_endpoint }}/dns-query 127.0.0.1"
+#            - "kdig -d @127.0.0.1 +tls-ca +tls-host={{ dot_endpoint }}  example.com"

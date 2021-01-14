@@ -1,0 +1,111 @@
+---
+
+- name: Make sure that *.conf files are included in unbound.conf
+  lineinfile:
+    path: "{{ unbound_config_dir }}/unbound.conf"
+    state: present
+    regexp: '(#|)include:\s\".*.conf\"$'
+#    regexp: '^include:.\*\.conf\"$'
+    line: 'include: "{{ unbound_confd_dir }}/*.conf"'
+
+- name: add custom config files
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: "{{ item.mode }}"
+    force: yes
+  loop: "{{ config_templates }}"
+
+- name: Fix windows CR/LF line endings in config files
+  replace:
+    path: "{{ item.dest }}"
+    regexp: "\r"
+  loop: "{{ config_templates }}"
+
+- name: Reload sysctl
+  shell: |
+    set -o pipefail
+    sysctl -p /etc/sysctl.d/99-unbound-sysctl.conf
+  args:
+      executable: /bin/bash
+  become: true
+  changed_when: false
+  ignore_errors: yes
+
+- name: Increase max open files for system/users
+  lineinfile:
+    path: "{{ item.name }}"
+    regexp: "DefaultLimitNOFILE"
+    line: DefaultLimitNOFILE=256000:1000000
+    state: present
+  loop:
+    - { name: "/etc/systemd/system.conf" }
+    - { name: "/etc/systemd/user.conf" }
+
+- name: run unbound-control-setup
+  shell: |
+    set -o pipefail
+    {{ unbound_bin_dir }}/unbound-control-setup
+  args:
+    executable: /bin/bash
+  register: control_key_setup
+  check_mode: no
+  changed_when: false
+
+- name: run unbound-anchor
+  shell: |
+    set -o pipefail
+    {{ unbound_bin_dir }}/unbound-anchor -v
+  environment:
+    LD_LIBRARY_PATH: "{{ ld_library_path }}"
+  args:
+    executable: /bin/bash
+  register: trust_anchors_setup
+  check_mode: no
+  changed_when: false
+  failed_when: trust_anchors_setup.rc != 1 and trust_anchors_setup.rc != 0
+
+- name: download root hints
+  shell: |
+    set -o pipefail
+    wget https://www.internic.net/domain/named.root -O "{{ unbound_config_dir }}/root.hints"
+  args:
+    executable: /bin/bash
+  check_mode: no
+  changed_when: false
+
+- name: replace values in service file
+  replace:
+    path: /etc/systemd/system/unbound.service
+    regexp: "{{ item.regexp }}"
+    replace: "{{ item.replace | default(omit) }}"
+  loop:
+    - regexp: "@UNBOUND_SBIN_DIR@"
+      replace: "{{ unbound_bin_dir }}"
+    - regexp: "@UNBOUND_RUN_DIR@"
+    - regexp: "@UNBOUND_CHROOT_DIR@"
+    - regexp: "@UNBOUND_PIDFILE@"
+  changed_when: false
+  notify:
+    - systemctl daemon-reload
+
+- name: comment lines in service file
+  replace:
+    path: /etc/systemd/system/unbound.service
+    regexp: "^({{ item }}.*)"
+    replace: '#\1'
+  changed_when: false
+  loop:
+    - CapabilityBoundingSet
+    - ProtectSystem
+    - SystemCallFilter
+
+- name: create custom unbound config file
+  template:
+    src: "unbound/unbound.conf.j2"
+    dest: "{{ unbound_confd_dir }}/99-custom-unbound.conf"
+    mode: "0644"
+    validate: "{{ unbound_bin_dir }}/unbound-checkconf %s"
+  changed_when: false
+  notify:
+    - restart unbound

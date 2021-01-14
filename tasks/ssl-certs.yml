@@ -1,0 +1,56 @@
+- name: create letsencrypt ssl certs
+  block:
+  - debug:
+      msg: "{{ letsencrypt_ssl_certs }}"
+
+  - name: Check if SSL cert exist
+    stat:
+      path: "{{ item.path }}"
+    register: ssl_certs_exist
+    with_items:
+      - "{{ letsencrypt_ssl_certs }}"
+
+  - debug:
+      msg: "{{ ssl_certs_exist }}"
+
+  - name: Generating LetsEncrypt SSL
+    include_role:
+      name: geerlingguy.certbot
+    vars:
+      certbot_create_if_missing: yes
+      certbot_create_method: standalone
+      certbot_admin_email: "{{ letsencrypt_email }}"
+      certbot_auto_renew: true
+      certbot_auto_renew_hour: "3"
+      certbot_auto_renew_minute: "30"
+      certbot_auto_renew_user: root
+      certbot_auto_renew_options: '--quiet --no-self-upgrade --pre-hook "systemctl stop nginx" --post-hook "systemctl start nginx"'
+      certbot_certs:
+        - domains:
+            - "{{ item.item.fqdn }}"
+      certbot_create_standalone_stop_services:
+        - nginx
+    when:
+      - not item.stat.exists
+    loop: "{{ ssl_certs_exist.results }}"
+
+  when: ansible_virtualization_type != "docker"
+
+- name: create dummy ssl certs
+  block:
+  - name: "Create dummy ssl directory"
+    file:
+      path: "{{ item }}"
+      state: directory
+      mode: "0755"
+    with_items:
+      - "/etc/letsencrypt/live/{{ ssl_tls_hostname }}"
+
+  - name: Create self-signed certificates, if configured.
+    command: >
+      openssl req -x509 -nodes -subj '/CN={{ item.fqdn }}' -days 365
+      -newkey rsa:4096 -sha256 -keyout {{ item.privkey }} -out {{ item.cert }}
+      creates={{ item.cert }}
+    with_items: "{{ letsencrypt_ssl_certs }}"
+
+  when: ansible_virtualization_type == "docker"
