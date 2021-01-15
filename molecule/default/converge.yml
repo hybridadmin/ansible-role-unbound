@@ -4,6 +4,6 @@
   become: yes
   gather_facts: yes
   vars:
-    unbound_interface: 0.0.0.0
+    unbound_interface: 127.0.0.1
   roles:
     - role: ansible-role-unbound
