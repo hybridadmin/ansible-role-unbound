@@ -7,7 +7,6 @@ enable_dnscrypt: true
 
 # unbound config/executable directories
 unbound_config_dir: /usr/local/etc/unbound
-#unbound_bin_dir: /usr/local/sbin
 unbound_lib_dir: /var/lib/unbound
 unbound_bin_dir: "{% if '/etc/unbound' == unbound_config_dir %}/usr/sbin{% else %}/usr/local/sbin{% endif %}"
 unbound_confd_dir: "{% if 'Redhat' in ansible_os_family %}{{ unbound_config_dir }}/conf.d{% else %}{{ unbound_config_dir }}/unbound.conf.d{% endif %}"
@@ -48,6 +47,7 @@ _unbound_requirements:
     - libevent-dev
     - nghttp2-dev
     - libsodium-dev
+    - iproute
   Debian:
     - libsystemd-dev
     - libexpat1-dev
@@ -59,6 +59,7 @@ _unbound_requirements:
     - libnghttp2-dev
     - libsodium-dev
     - apparmor
+    - iproute2
   RedHat:
     - expat-devel
     - file
@@ -68,6 +69,7 @@ _unbound_requirements:
     - procps-ng
     - libnghttp2-devel
     - libsodium-devel
+    - iproute
   Suse:
     - libexpat-devel
     - file
@@ -76,6 +78,7 @@ _unbound_requirements:
     - libevent-devel
     - libnghttp2-devel
     - libsodium-devel
+    - iproute
 
 unbound_requirements: "{{ _unbound_requirements[ansible_os_family] + _unbound_requirements['default'] }}"
 

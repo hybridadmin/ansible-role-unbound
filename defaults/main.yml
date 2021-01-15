@@ -10,9 +10,6 @@ unbound_temporary_directory: /tmp
 # The interface to listen on.
 unbound_interface: 127.0.0.1
 
-# The port to listen on.
-unbound_port: 53
-
 # SSL settings
 ssl_tls_hostname: dns-server.com
 

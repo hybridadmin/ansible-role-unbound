@@ -27,10 +27,12 @@
   shell: |
     set -o pipefail
     cd {{ unbound_dnscrypt_dir }}; dnscrypt-wrapper --gen-provider-keypair \
-      --provider-name=2.dnscrypt-cert.{{ ssl_tls_hostname }} --ext-address={{ ansible_default_ipv4.address|default(ansible_all_ipv4_addresses[0]) }}
+      --provider-name=2.dnscrypt-cert.{{ ssl_tls_hostname }} --ext-address={{ server_main_ip.stdout }}
   args:
     executable: /bin/bash
     creates: "{{ unbound_dnscrypt_dir }}/secret.key"
+  environment:
+    PATH: '/usr/local/sbin:{{ ansible_env.PATH }}'
   become: true
   changed_when: false
   register: create_provider_keypair
@@ -42,6 +44,8 @@
   args:
     executable: /bin/bash
     creates: "{{ unbound_dnscrypt_dir }}/crypt_secretkey.key"
+  environment:
+    PATH: '/usr/local/sbin:{{ ansible_env.PATH }}'
   become: true
   changed_when: false
   register: create_secret_key
@@ -55,6 +59,8 @@
   args:
     executable: /bin/bash
     creates: "{{ unbound_dnscrypt_dir }}/provider_cert.cert"
+  environment:
+    PATH: '/usr/local/sbin:{{ ansible_env.PATH }}'
   become: true
   changed_when: false
   register: create_provider_cert

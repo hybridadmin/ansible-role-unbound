@@ -16,7 +16,6 @@ An example playbook can be specified as below:
     unbound_version: 1.10.1
     unbound_temporary_directory: /tmp
     unbound_interface: 127.0.0.1
-    unbound_port: 53
   roles:
     - role: hybridadmin.unbound
 ```
@@ -50,9 +49,6 @@ unbound_temporary_directory: /tmp
 
 # The interface to listen on.
 unbound_interface: 127.0.0.1
-
-# The port to listen on.
-unbound_port: 53
 
 # configuration file settings
 unbound_settings:

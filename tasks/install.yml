@@ -7,6 +7,16 @@
   until: unbound_install_requirements is succeeded
   retries: 3
 
+- name: get main ip address
+  shell: |
+    set -o pipefail
+    ip addr | grep global | awk '{ print $2}' | cut -d '/' -f1 | head -n1
+  args:
+    executable: /bin/bash
+  register: server_main_ip
+  become: true
+  changed_when: false
+
 # https://b4d.sablun.org/blog/2018-09-27-when-unbound-wont-write-logs/
 - name: apply apparmor fix for unbound
   template:
