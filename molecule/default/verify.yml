@@ -23,19 +23,19 @@
     required_packages: "{{ _required_packages[ansible_os_family] + _required_packages['default'] }}"
 
   tasks:
-    - name: install required packages
+    - name: "install required packages"
       package:
         name: "{{ required_packages }}"
         state: present
 
-    - name: run netstat command during verify
+    - name: "run netstat command"
       command: netstat -ntplu
       changed_when: false
-      
+
     #https://github.com/ameshkov/dnslookup
-    - name: Setup DNS Client
+    - name: "Setup DNS Client"
       block:
-        - name: Download dnslookup client version {{ dns_client_version }}
+        - name: "Download dnslookup client version {{ dns_client_version }}"
           get_url:
             url: https://github.com/ameshkov/dnslookup/releases/download/v{{ dns_client_version }}/dnslookup-linux-amd64-v{{ dns_client_version }}.tar.gz
             dest: /tmp/dnslookup-v{{ dns_client_version }}.tar.gz
@@ -43,14 +43,14 @@
             force: yes
           changed_when: false
 
-        - name: Unpack dnslookup client version {{ dns_client_version }}
+        - name: "Unpack dnslookup client version {{ dns_client_version }}"
           unarchive:
             src: /tmp/dnslookup-v{{ dns_client_version }}.tar.gz
             dest: /tmp
             remote_src: yes
           changed_when: false
 
-        - name: Dns lookups (Normal/DOT/DOH)
+        - name: "Dns lookups (Plain/DOT/DOH)"
           shell: |
             set -o pipefail
             {{ item}}
@@ -62,4 +62,3 @@
             - "kdig gmail.com @127.0.0.1"
             - "VERIFY=0 /tmp/linux-amd64/dnslookup example.org tls://{{ dot_endpoint }} 127.0.0.1"
             - "VERIFY=0 /tmp/linux-amd64/dnslookup example.org https://{{ doh_endpoint }}/dns-query 127.0.0.1"
-#            - "kdig -d @127.0.0.1 +tls-ca +tls-host={{ dot_endpoint }}  example.com"

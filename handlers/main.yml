@@ -17,7 +17,7 @@
 
 - name: install service
   copy:
-    src: "{{ unbound_temporary_directory }}/unbound-{{ unbound_version }}/contrib/unbound.service.in"
+    src: "{{ unbound_temporary_directory }}/unbound-{{ unbound_version }}/contrib/unbound.service"
     dest: /etc/systemd/system/unbound.service
     mode: "0644"
     remote_src: yes

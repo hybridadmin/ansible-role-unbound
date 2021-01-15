@@ -5,9 +5,13 @@ enable_dot: true
 enable_doh: true
 enable_dnscrypt: true
 
+unbound_usr: "unbound"
+unbound_grp: "unbound"
+
 # unbound config/executable directories
-unbound_config_dir: /usr/local/etc/unbound
-unbound_lib_dir: /var/lib/unbound
+disto_pkg_paths: true
+unbound_config_dir: "{% if disto_pkg_paths %}/etc/unbound{% else %}/usr/local/etc/unbound{% endif %}"
+unbound_lib_dir: "/var/lib/unbound"
 unbound_bin_dir: "{% if '/etc/unbound' == unbound_config_dir %}/usr/sbin{% else %}/usr/local/sbin{% endif %}"
 unbound_confd_dir: "{% if 'Redhat' in ansible_os_family %}{{ unbound_config_dir }}/conf.d{% else %}{{ unbound_config_dir }}/unbound.conf.d{% endif %}"
 

@@ -1,6 +1,6 @@
 ---
 
-- name: Make sure that *.conf files are included in unbound.conf
+- name: "ensure *.conf files are included in {{ unbound_config_dir }}/unbound.conf"
   lineinfile:
     path: "{{ unbound_config_dir }}/unbound.conf"
     state: present
@@ -8,7 +8,7 @@
 #    regexp: '^include:.\*\.conf\"$'
     line: 'include: "{{ unbound_confd_dir }}/*.conf"'
 
-- name: add custom config files
+- name: "add required config files"
   template:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
@@ -16,13 +16,13 @@
     force: yes
   loop: "{{ config_templates }}"
 
-- name: Fix windows CR/LF line endings in config files
+- name: "Fix windows CR/LF line endings in config files"
   replace:
     path: "{{ item.dest }}"
     regexp: "\r"
   loop: "{{ config_templates }}"
 
-- name: Reload sysctl
+- name: "Reload sysctl settings from /etc/sysctl.d/99-unbound-sysctl.conf"
   shell: |
     set -o pipefail
     sysctl -p /etc/sysctl.d/99-unbound-sysctl.conf
@@ -32,7 +32,7 @@
   changed_when: false
   ignore_errors: yes
 
-- name: Increase max open files for system/users
+- name: "Increase max open files for system/users"
   lineinfile:
     path: "{{ item.name }}"
     regexp: "DefaultLimitNOFILE"
@@ -42,7 +42,7 @@
     - { name: "/etc/systemd/system.conf" }
     - { name: "/etc/systemd/user.conf" }
 
-- name: run unbound-control-setup
+- name: "unbound-control-setup: generate remote control tls keys"
   shell: |
     set -o pipefail
     {{ unbound_bin_dir }}/unbound-control-setup
@@ -52,9 +52,10 @@
   check_mode: no
   changed_when: false
 
-- name: run unbound-anchor
+- name: "get trust anchor file {{ unbound_config_dir }}/root.key"
   shell: |
     set -o pipefail
+    rm -rf {{ unbound_config_dir }}/root.key
     {{ unbound_bin_dir }}/unbound-anchor -v
   environment:
     LD_LIBRARY_PATH: "{{ ld_library_path }}"
@@ -65,7 +66,7 @@
   changed_when: false
   failed_when: trust_anchors_setup.rc != 1 and trust_anchors_setup.rc != 0
 
-- name: download root hints
+- name: "download root hints to {{ unbound_config_dir }}/root.hints"
   shell: |
     set -o pipefail
     wget https://www.internic.net/domain/named.root -O "{{ unbound_config_dir }}/root.hints"
@@ -74,22 +75,7 @@
   check_mode: no
   changed_when: false
 
-- name: replace values in service file
-  replace:
-    path: /etc/systemd/system/unbound.service
-    regexp: "{{ item.regexp }}"
-    replace: "{{ item.replace | default(omit) }}"
-  loop:
-    - regexp: "@UNBOUND_SBIN_DIR@"
-      replace: "{{ unbound_bin_dir }}"
-    - regexp: "@UNBOUND_RUN_DIR@"
-    - regexp: "@UNBOUND_CHROOT_DIR@"
-    - regexp: "@UNBOUND_PIDFILE@"
-  changed_when: false
-  notify:
-    - systemctl daemon-reload
-
-- name: comment lines in service file
+- name: "comment un-used options in /etc/systemd/system/unbound.service"
   replace:
     path: /etc/systemd/system/unbound.service
     regexp: "^({{ item }}.*)"
@@ -100,7 +86,7 @@
     - ProtectSystem
     - SystemCallFilter
 
-- name: create custom unbound config file
+- name: "create custom config file {{ unbound_confd_dir }}/99-custom-unbound.conf"
   template:
     src: "unbound/unbound.conf.j2"
     dest: "{{ unbound_confd_dir }}/99-custom-unbound.conf"
@@ -109,3 +95,7 @@
   changed_when: false
   notify:
     - restart unbound
+
+- name: "set correct folder ownership for {{ unbound_config_dir }}"
+  file: dest="{{ unbound_config_dir }}" owner=unbound group=unbound recurse=yes
+  changed_when: false

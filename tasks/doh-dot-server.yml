@@ -1,6 +1,6 @@
 ---
 
-- name: enable DNS over TLS
+- name: "enable DNS over TLS"
   blockinfile:
     path: "{{ unbound_confd_dir }}/99-custom-unbound.conf"
 #    insertafter: 'inter.*:\s127.*.1@53'
@@ -13,7 +13,7 @@
   when: enable_dot
   changed_when: false
 
-- name: Enable DNS over HTTPS
+- name: "Enable DNS over HTTPS"
   lineinfile:
     path: "{{ unbound_confd_dir }}/99-custom-unbound.conf"
     insertbefore: 'access-con.*:.*'

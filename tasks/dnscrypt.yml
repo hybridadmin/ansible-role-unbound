@@ -1,20 +1,20 @@
 ---
 
 
-- name: remove directory {{ unbound_temporary_directory }}/dnscrypt-wrapper if it exists
+- name: "remove {{ unbound_temporary_directory }}/dnscrypt-wrapper dir if it exists"
   file:
     path: "{{ unbound_temporary_directory }}/dnscrypt-wrapper"
     state: absent
   changed_when: false
 
-- name: clone dnscrypt-wrapper repo
+- name: "clone latest dnscrypt-wrapper repo"
   git:
     repo: 'git://github.com/cofyc/dnscrypt-wrapper.git'
     dest: "{{ unbound_temporary_directory }}/dnscrypt-wrapper"
     version: master
   changed_when: false
 
-- name: Install dnscrypt-wrapper
+- name: "Install dnscrypt-wrapper"
   shell: |
     set -o pipefail
     cd {{ unbound_temporary_directory }}/dnscrypt-wrapper; make configure; ./configure; make install
@@ -65,7 +65,7 @@
   changed_when: false
   register: create_provider_cert
 
-- name: enable dnscrypt config
+- name: "enable dnscrypt config in {{ unbound_confd_dir }}/99-custom-unbound.conf"
   lineinfile:
     path: "{{ unbound_confd_dir }}/99-custom-unbound.conf"
     line: "{{ item }}"
@@ -78,14 +78,14 @@
     - "    dnscrypt-secret-key: {{ unbound_dnscrypt_dir }}/crypt_secretkey.key"
     - "    dnscrypt-provider-cert: {{ unbound_dnscrypt_dir }}/provider_cert.cert"
 
-- name: save DNS Stamp info
+- name: "save DNS Stamp info"
   copy:
     content: "{{ create_provider_keypair.stdout }}"
     dest: "{{ ansible_user_dir }}/dnsstamp.txt"
     mode: 0644
-  delegate_to: localhost
+#  delegate_to: localhost
   changed_when: false
 
-- name: set correct folder ownership
+- name: "set correct folder ownership for {{ unbound_dnscrypt_dir }}"
   file: dest="{{ unbound_dnscrypt_dir }}" owner=unbound group=unbound recurse=yes
   changed_when: false

@@ -1,13 +1,13 @@
 ---
 
-- name: install requirements
+- name: "install required packages"
   action: >
     {{ ansible_pkg_mgr }} name={{ unbound_requirements }} state=present update_cache=yes
   register: unbound_install_requirements
   until: unbound_install_requirements is succeeded
   retries: 3
 
-- name: get main ip address
+- name: "get main ip address"
   shell: |
     set -o pipefail
     ip addr | grep global | awk '{ print $2}' | cut -d '/' -f1 | head -n1
@@ -18,7 +18,7 @@
   changed_when: false
 
 # https://b4d.sablun.org/blog/2018-09-27-when-unbound-wont-write-logs/
-- name: apply apparmor fix for unbound
+- name: "apply apparmor fix for unbound"
   template:
     src: "apparmor.d/usr.sbin.unbound.j2"
     dest: "/etc/apparmor.d/local/usr.sbin.unbound"
@@ -26,7 +26,7 @@
     validate: apparmor_parser -r %s
   when: (ansible_os_family == 'Debian' and ansible_virtualization_type != "docker")
 
-- name: download archive
+- name: "download archive unbound-{{ unbound_version }}.tar.gz"
   unarchive:
     src: "https://nlnetlabs.nl/downloads/unbound/unbound-{{ unbound_version }}.tar.gz"
     dest: "{{ unbound_temporary_directory }}"
@@ -42,15 +42,15 @@
     - make install
     - install service
 
-- name: create group unbound
+- name: "create group {{ unbound_usr }}"
   group:
-    name: unbound
+    name: "{{ unbound_usr }}"
     system: yes
     gid: 88
 
-- name: create user unbound
+- name: "create user {{ unbound_grp }}"
   user:
-    name: unbound
+    name: "{{ unbound_grp }}"
     home: "{{ unbound_lib_dir }}"
     comment: "Unbound DNS resolver"
     group: unbound

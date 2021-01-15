@@ -9,3 +9,4 @@ exclude_paths:
 warn_list:
   - '106'
   - '208'
+  - '303'

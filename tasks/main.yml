@@ -1,7 +1,7 @@
 ---
 # tasks file for unbound
 
-- name: Wait for systemd to complete initialization. # noqa 303
+- name: "Wait for systemd to complete initialization."
   command: systemctl is-system-running
   register: systemctl_status
   until: >
@@ -12,7 +12,7 @@
   when: (ansible_service_mgr == 'systemd' and ansible_distribution == 'Fedora')
   changed_when: false
 
-- name: Populate service facts
+- name: "get status of systemd-resolved service"
   shell: |
     set -o pipefail
     systemctl is-enabled systemd-resolved
@@ -23,32 +23,32 @@
   changed_when: false
   register: systemd_resolved_status
 
-- name: disable systemd-resolved
+- name: "disable systemd-resolved service"
   include: systemd-resolved.yml
   when: ('enabled' in systemd_resolved_status.stdout)
 
-- name: start install
+- name: "include install tasks"
   include: install.yml
 
-- name: start configure
+- name: "include configure tasks"
   include: configure.yml
 
-- name: start ssl config
+- name: "include ssl config tasks"
   include: ssl-certs.yml
   when: enable_dot or enable_doh
 
 - name: flush handlers
   meta: flush_handlers
 
-- name: start doh/dot config
+- name: "include doh/dot config tasks"
   include: doh-dot-server.yml
   when: enable_dot or enable_doh
 
-- name: start dnscrypt config
+- name: "include dnscrypt config tasks"
   include: dnscrypt.yml
   when: enable_dnscrypt
 
-- name: restart unbound to enable all settings
+- name: "restart unbound to enable all settings"
   systemd:
     name: unbound
     state: restarted
