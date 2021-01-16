@@ -1,6 +1,6 @@
 # unbound
 
-Install and configure unbound on your system.
+Install and configure unbound on your system with support for Plain DNS, DOT, DOH and Dnscrypt.
 
 |Travis|GitHub|Quality|Downloads|
 |------|------|-------|---------|
@@ -13,7 +13,7 @@ An example playbook can be specified as below:
 ---
 - hosts: all
   vars:
-    unbound_version: 1.10.1
+    unbound_version: 1.13.1
     unbound_temporary_directory: /tmp
     unbound_interface: 127.0.0.1
   roles:
@@ -42,7 +42,7 @@ These variables are set in `defaults/main.yml`:
 # defaults file for unbound
 
 # What version to download/install.
-unbound_version: 1.10.1
+unbound_version: 1.13.1
 
 # Where to unpack unbound.
 unbound_temporary_directory: /tmp
