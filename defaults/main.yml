@@ -19,7 +19,7 @@ total_ram_mb: "{{ ansible_memtotal_mb }}"
 msg_cache_mb: 256
 num_queries_per_thread: 4096
 
-unbound_settings:
+unbound_config:
   server_section:
     interface: "{{ unbound_interface }}@53"
     access-control: "0.0.0.0/0 allow"
@@ -27,7 +27,7 @@ unbound_settings:
     chroot: ""
     aggressive-nsec: "yes"
     cache-max-ttl: 86400
-    cache-min-ttl: 600
+    cache-min-ttl: 3600
     hide-identity: "yes"
     hide-version: "yes"
     prefetch: "yes"

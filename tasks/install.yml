@@ -24,7 +24,9 @@
     dest: "/etc/apparmor.d/local/usr.sbin.unbound"
     mode: 0644
     validate: apparmor_parser -r %s
-  when: (ansible_os_family == 'Debian' and ansible_virtualization_type != "docker")
+  when:
+    - ansible_apparmor.status == 'enabled'
+    - ansible_virtualization_type != "docker"
 
 - name: "download archive unbound-{{ unbound_version }}.tar.gz"
   unarchive:

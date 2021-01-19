@@ -24,7 +24,7 @@ An example playbook can be specified as below:
 
 The configuration options in [unbound.conf](https://nlnetlabs.nl/documentation/unbound/unbound.conf/) and what sections they should be used under are defined below:
 ```yaml
-unbound_settings: 
+unbound_config: 
   server_section: 'options under the server: clause are defined here'
   remote_control_section: 'options under the remote-control: clause are defined here'
   stub_zone_section: 'options under the stub-zone: clause are defined here'
@@ -51,7 +51,7 @@ unbound_temporary_directory: /tmp
 unbound_interface: 127.0.0.1
 
 # configuration file settings
-unbound_settings:
+unbound_config:
   server_section:
     access-control: "0.0.0.0/0 allow"
     do-ip6: "no"

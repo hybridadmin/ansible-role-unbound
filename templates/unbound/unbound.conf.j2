@@ -1,9 +1,11 @@
 {{ ansible_managed | comment }}
+# A description of the configured settings and be found at the link below:
+# https://www.nlnetlabs.nl/documentation/unbound/unbound.conf/
 
 {% for section in config_sections %}
-{% if unbound_settings[''~section.name] is defined %}
+{% if unbound_config[''~section.name] is defined %}
 {{ section.value }}:
-{% for key, value in unbound_settings[''~section.name].items() | sort() %}
+{% for key, value in unbound_config[''~section.name].items() | sort() %}
 {% if key not in ['chroot','directory','logfile','pidfile','root-hints','trust-anchor-file','auto-trust-anchor-file','trusted-keys-file','dlv-anchor-file','server-cert-file','control-cert-file','server-key-file','control-key-file','zonefile','ipsecmod-hook','zonefile','tls-service-key','ssl-service-key','tls-service-pem','ssl-service-pem','tls-cert-bundle','ssl-cert-bundle','tls-session-ticket-keys','tls-ciphers','tls-ciphersuites','log-identity','identity','version','define-tag','access-control-tag','local-zone-tag','module-config','username'] %}
     {{ key }}: {{ value }}
 {% else %}
