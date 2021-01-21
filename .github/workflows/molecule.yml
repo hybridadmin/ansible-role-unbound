@@ -18,13 +18,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Lint Ansible Playbook
+    - name: Lint Ansible Role
       uses: ansible/ansible-lint-action@v4.1.0.post0
       with:
-        targets: "./"
-        override-deps: |
-          ansible==2.9
-          ansible-lint==4.2.0
+#        targets: "./"
+        args: "-q"
 
   molecule:
     needs:
