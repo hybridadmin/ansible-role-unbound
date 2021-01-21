@@ -36,7 +36,7 @@ jobs:
         config:
           - image: "centos"
             tag: "7"
-          - image: "centos"
+          - image: "geerlingguy/docker-ubuntu2004-ansible"
             tag: "latest"
           - image: "fedora"
             tag: "31"
@@ -56,6 +56,9 @@ jobs:
       - name: molecule
 #        uses: robertdebock/molecule-action@2.3.4
         uses: gofrolist/molecule-action@v2.0.1
+        env:
+          PY_COLORS: '1'
+          ANSIBLE_FORCE_COLOR: '1'
         with:
           image: ${{ matrix.config.image }}
           tag: ${{ matrix.config.tag }}
