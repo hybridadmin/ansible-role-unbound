@@ -26,7 +26,7 @@ jobs:
             tag: "latest"
           - image: "geerlingguy/docker-centos7-ansible"
             tag: "latest"
-          - image: "geerlingguy/docker-ubuntu2004-ansible
+          - image: "geerlingguy/docker-ubuntu2004-ansible"
             tag: "latest"
           - image: "geerlingguy/docker-ubuntu1804-ansible"
             tag: "latest"
