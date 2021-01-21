@@ -2,21 +2,22 @@
 #
 # Ansible managed
 #
+# https://github.com/marketplace/actions/publish-ansible-role-to-galaxy
 
 name: Release to Ansible Galaxy
 
 on:
   push:
     tags:
-      - '*'
-  schedule:
-    - cron: '21 21 21 * *'
+      - 'v*'
 
 jobs:
-  release:
+  build:
     runs-on: ubuntu-latest
     steps:
+      - name: checkout
+        uses: actions/checkout@v2
       - name: galaxy
-        uses: 0x022b/galaxy-role-import-action@1.0.0
+        uses: robertdebock/galaxy-action@1.1.0
         with:
           galaxy_api_key: ${{ secrets.galaxy_api_key }}
