@@ -1,3 +1,5 @@
+---
+
 - name: "create letsencrypt ssl certs"
   block:
   - debug:
@@ -36,11 +38,10 @@
 
   when:
     - not ansible_virtualization_type | regex_search("docker|container")
-#    - ansible_virtualization_type != "docker" ansible_virtualization_type != "container"
 
-- name: "create dummy ssl certs"
+- name: "create temporary ssl certs"
   block:
-  - name: "Create dummy ssl directory"
+  - name: "Create temporary ssl directory"
     file:
       path: "{{ item }}"
       state: directory
@@ -56,4 +57,3 @@
     with_items: "{{ letsencrypt_ssl_certs }}"
 
   when: ansible_virtualization_type | regex_search("docker|container")
-#  ansible_virtualization_type == "docker" or ansible_virtualization_type == "container"
