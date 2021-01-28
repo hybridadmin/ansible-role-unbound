@@ -1,6 +1,10 @@
 ---
 # tasks file for unbound
 
+- name: show ansible_virtualization_type
+  debug:
+    msg: "{{ ansible_virtualization_type }}"
+
 - name: "Wait for systemd to complete initialization."
   command: systemctl is-system-running
   register: systemctl_status
