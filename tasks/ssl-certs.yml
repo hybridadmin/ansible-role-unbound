@@ -5,7 +5,7 @@
 
   - name: "Check if SSL cert exist"
     stat:
-      path: "{{ item.path }}"
+      path: "{{ item.cert }}"
     register: ssl_certs_exist
     with_items:
       - "{{ letsencrypt_ssl_certs }}"
