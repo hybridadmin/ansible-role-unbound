@@ -26,7 +26,7 @@
     validate: apparmor_parser -r %s
   when:
     - ansible_apparmor.status == 'enabled'
-    - ansible_virtualization_type != "docker"
+    - not ansible_virtualization_type | regex_search("docker|container")
 
 - name: "download archive unbound-{{ unbound_version }}.tar.gz"
   unarchive:

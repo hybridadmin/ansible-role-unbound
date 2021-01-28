@@ -27,7 +27,7 @@ net.ipv4.tcp_rfc1337 = 1
 # only when it is safe from the network stack’s perspective.
 net.ipv4.tcp_tw_reuse = 1
 
-{% if 'docker' not in ansible_virtualization_type %}
+{% if not ansible_virtualization_type | regex_search("docker|container") %}
 net.core.wmem_max=12582912
 net.core.wmem_default=12582912
 net.core.rmem_max=12582912
@@ -46,7 +46,7 @@ net.ipv4.tcp_sack = 1
 # Should we increase this to 10k?
 net.core.somaxconn = 10240
 
-{% if 'docker' not in ansible_virtualization_type %}
+{% if not ansible_virtualization_type | regex_search("docker|container") %}
 # The maximum number of packets in the receive queue that passed through the network interface and are waiting to be processed by the kernel.
 net.core.netdev_max_backlog = 65536
 {% endif %}
