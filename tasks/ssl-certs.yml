@@ -35,7 +35,7 @@
     loop: "{{ ssl_certs_exist.results }}"
 
   when:
-    - ansible_virtualization_type is regex("docker|container")
+    - not ansible_virtualization_type | regex_search("docker|container")
 #    - ansible_virtualization_type != "docker" ansible_virtualization_type != "container"
 
 - name: "create dummy ssl certs"
@@ -55,5 +55,5 @@
       creates={{ item.cert }}
     with_items: "{{ letsencrypt_ssl_certs }}"
 
-  when: not ansible_virtualization_type is regex("docker|container")
+  when: ansible_virtualization_type | regex_search("docker|container")
 #  ansible_virtualization_type == "docker" or ansible_virtualization_type == "container"
