@@ -56,7 +56,7 @@
   shell: |
     set -o pipefail
     rm -rf {{ unbound_config_dir }}/root.key
-    {{ unbound_bin_dir }}/unbound-anchor -v
+    {{ unbound_anchor_cmd }}
   environment:
     LD_LIBRARY_PATH: "{{ ld_library_path }}"
   args:
