@@ -18,7 +18,7 @@ unbound_confd_dir: "{% if 'Redhat' in ansible_os_family %}{{ unbound_config_dir 
 _unbound_build_cmd: " --enable-systemd --with-libevent --enable-dnscrypt --with-libnghttp2"
 unbound_build_cmd: "{% if '/etc/unbound' == unbound_config_dir %}{{ _unbound_build_cmd }} --prefix=/usr --sysconfdir=/etc --with-pidfile=/run/unbound.pid{% else %}{{ _unbound_build_cmd }}{% endif %}"
 
-unbound_anchor_cmd: "{% if ansible_default_ipv6 is defined %}{{ unbound_bin_dir }}/unbound-anchor -4 -v {% else %}{{ unbound_bin_dir }}/unbound-anchor -v {% endif %}"
+unbound_anchor_cmd: "{% if ansible_default_ipv6.address is defined %}{{ unbound_bin_dir }}/unbound-anchor -v {% else %}{{ unbound_bin_dir }}/unbound-anchor -4 -v {% endif %}"
 
 ld_library_path: "{% if '/etc/unbound' == unbound_config_dir %}/usr/lib{% else %}/usr/local/lib{% endif %}"
 
