@@ -19,6 +19,10 @@ galaxy_info:
       versions:
         - bionic
         - focal
+    - name: Debian
+      versions:
+        - 10
+        - 9
 
   galaxy_tags:
     - unbound
