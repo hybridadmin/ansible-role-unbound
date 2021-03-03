@@ -6,4 +6,4 @@
   vars:
     unbound_interface: 127.0.0.1
   roles:
-    - role: ansible-role-unbound
+    - role: hybridadmin.unbound
