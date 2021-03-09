@@ -5,7 +5,6 @@
     path: "{{ unbound_config_dir }}/unbound.conf"
     state: present
     regexp: '(#|)include:\s\".*.conf\"$'
-#    regexp: '^include:.\*\.conf\"$'
     line: 'include: "{{ unbound_confd_dir }}/*.conf"'
 
 - name: "add required config files"

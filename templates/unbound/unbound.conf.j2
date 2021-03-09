@@ -1,9 +1,6 @@
 {{ ansible_managed | comment }}
-#
-# See unbound.conf(5) man page, version 1.13.0.
-#
+# See: https://www.nlnetlabs.nl/documentation/unbound/unbound.conf/
 
-# The server clause sets the main parameters.
 server:
         # verbosity number, 0 is least verbose. 1 is default.
         verbosity: {{ unbound_config.server_section.verbosity }}
@@ -209,21 +206,11 @@ server:
         # serve-expired: no
         serve-expired: {{ unbound_config.server_section.serve-expired }}
         
-        #
         # Limit serving of expired responses to configured seconds after
         # expiration. 0 disables the limit.
         # serve-expired-ttl: 0
         serve-expired-ttl: {{ unbound_config.server_section.serve-expired-ttl }}
-        #
-        # Set the TTL of expired records to the serve-expired-ttl value after a
-        # failed attempt to retrieve the record from upstream. This makes sure
-        # that the expired records will be served as long as there are queries
-        # for it.
-        # serve-expired-ttl-reset: no
-        #
-        # TTL value to use when replying with expired data.
-        # serve-expired-reply-ttl: 30
-        #
+
         # Time in milliseconds before replying to the client with expired data.
         # This essentially enables the serve-stale behavior as specified in
         # RFC 8767 that first tries to resolve before
@@ -238,7 +225,6 @@ server:
         # key-cache-slabs: 4
         key-cache-slabs: {{ unbound_config.server_section.key-cache-slabs }}
 
-# Remote control config section.
 remote-control:
         # Enable remote control with unbound-control(8) here.
         # set up the keys and certificates with unbound-control-setup.
