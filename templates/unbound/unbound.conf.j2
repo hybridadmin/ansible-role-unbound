@@ -1,16 +1,246 @@
 {{ ansible_managed | comment }}
-# A description of the configured settings and be found at the link below:
-# https://www.nlnetlabs.nl/documentation/unbound/unbound.conf/
+#
+# See unbound.conf(5) man page, version 1.13.0.
+#
 
-{% for section in config_sections %}
-{% if unbound_config[''~section.name] is defined %}
-{{ section.value }}:
-{% for key, value in unbound_config[''~section.name].items() | sort() %}
-{% if key not in ['chroot','directory','logfile','pidfile','root-hints','trust-anchor-file','auto-trust-anchor-file','trusted-keys-file','dlv-anchor-file','server-cert-file','control-cert-file','server-key-file','control-key-file','zonefile','ipsecmod-hook','zonefile','tls-service-key','ssl-service-key','tls-service-pem','ssl-service-pem','tls-cert-bundle','ssl-cert-bundle','tls-session-ticket-keys','tls-ciphers','tls-ciphersuites','log-identity','identity','version','define-tag','access-control-tag','local-zone-tag','module-config','username'] %}
-    {{ key }}: {{ value }}
-{% else %}
-    {{ key }}: "{{ value }}"
-{% endif %}
-{% endfor %}
-{% endif %}
-{% endfor %}
+# The server clause sets the main parameters.
+server:
+        # verbosity number, 0 is least verbose. 1 is default.
+        verbosity: {{ unbound_config.server_section.verbosity }}
+
+        # number of threads to create. 1 disables threading.
+        # num-threads: 1
+        num-threads: {{ unbound_config.server_section.num-threads }}
+
+        # specify the interfaces to answer queries from by ip-address.
+        # The default is to listen to localhost (127.0.0.1 and ::1).
+        # specify 0.0.0.0 and ::0 to bind to all available interfaces.
+        # specify every interface[@port] on a new 'interface:' labelled line.
+        # The listen interfaces are not changed on reload, only on restart.
+        # interface: 192.0.2.153
+        # interface: 192.0.2.154
+        # interface: 192.0.2.154@5003
+        # interface: 2001:DB8::5
+        interface: {{ unbound_config.server_section.interface }}
+
+        # number of ports to allocate per thread, determines the size of the
+        # port range that can be open simultaneously.  About double the
+        # num-queries-per-thread, or, use as many as the OS will allow you.
+        # outgoing-range: 4096
+        outgoing-range: {{ unbound_config.server_section.outgoing-range }}
+
+        # buffer size for UDP port 53 incoming (SO_RCVBUF socket option).
+        # 0 is system default.  Use 4m to catch query spikes for busy servers.
+        # so-rcvbuf: 0
+        so-rcvbuf: {{ unbound_config.server_section.so-rcvbuf }}
+
+        # buffer size for UDP port 53 outgoing (SO_SNDBUF socket option).
+        # 0 is system default.  Use 4m to handle spikes on very busy servers.
+        # so-sndbuf: 0
+        so-sndbuf: {{ unbound_config.server_section.so-sndbuf }}
+
+        # use SO_REUSEPORT to distribute queries over threads.
+        # at extreme load it could be better to turn it off to distribute even.
+        # so-reuseport: yes
+        so-reuseport: unbound_config.server_section.so-reuseport 
+
+        # EDNS reassembly buffer to advertise to UDP peers (the actual buffer
+        # is set with msg-buffer-size).
+        # edns-buffer-size: 1232
+        edns-buffer-size: {{ unbound_config.server_section.edns-buffer-size }}
+
+        # the amount of memory to use for the message cache.
+        # plain value in bytes or you can append k, m or G. default is "4Mb".
+        # msg-cache-size: 4m
+        msg-cache-size: {{ unbound_config.server_section.msg-cache-size }}
+
+        # the number of slabs to use for the message cache.
+        # the number of slabs must be a power of 2.
+        # more slabs reduce lock contention, but fragment memory usage.
+        # msg-cache-slabs: 4
+        msg-cache-slabs: {{ unbound_config.server_section.msg-cache-slabs }}
+
+        # the number of queries that a thread gets to service.
+        # num-queries-per-thread: 1024
+        num-queries-per-thread: {{ unbound_config.server_section.num-queries-per-thread }}
+
+        # the amount of memory to use for the RRset cache.
+        # plain value in bytes or you can append k, m or G. default is "4Mb".
+        # rrset-cache-size: 4m
+        rrset-cache-size: {{ unbound_config.server_section.rrset-cache-size }}
+
+        # the number of slabs to use for the RRset cache.
+        # the number of slabs must be a power of 2.
+        # more slabs reduce lock contention, but fragment memory usage.
+        # rrset-cache-slabs: 4
+        rrset-cache-slabs: {{ unbound_config.server_section.rrset-cache-slabs }}
+
+        # the time to live (TTL) value lower bound, in seconds. Default 0.
+        # If more than an hour could easily give trouble due to stale data.
+        # cache-min-ttl: 0
+        cache-min-ttl: {{ unbound_config.server_section.cache-min-ttl }}
+
+        # the time to live (TTL) value cap for RRsets and messages in the
+        # cache. Items are not cached for longer. In seconds.
+        # cache-max-ttl: 86400
+        cache-max-ttl: {{ unbound_config.server_section.cache-max-ttl }}
+
+        # the number of slabs to use for the Infrastructure cache.
+        # the number of slabs must be a power of 2.
+        # more slabs reduce lock contention, but fragment memory usage.
+        # infra-cache-slabs: 4
+        infra-cache-slabs: {{ unbound_config.server_section.infra-cache-slabs }}
+
+        # Enable IPv6, "yes" or "no".
+        # do-ip6: yes
+        do-ip6: {{ unbound_config.server_section.do-ip6 }}
+
+        # control which clients are allowed to make (recursive) queries
+        # to this server. Specify classless netblocks with /size and action.
+        # By default everything is refused, except for localhost.
+        # Choose deny (drop message), refuse (polite error reply),
+        # allow (recursive ok), allow_setrd (recursive ok, rd bit is forced on),
+        # allow_snoop (recursive and nonrecursive ok)
+        # deny_non_local (drop queries unless can be answered from local-data)
+        # refuse_non_local (like deny_non_local but polite error reply).
+        # access-control: 0.0.0.0/0 refuse
+        # access-control: 127.0.0.0/8 allow
+        # access-control: ::0/0 refuse
+        # access-control: ::1 allow
+        # access-control: ::ffff:127.0.0.1 allow
+        access-control: {{ unbound_config.server_section.access-control }}
+
+        # if given, a chroot(2) is done to the given directory.
+        # i.e. you can chroot to the working directory, for example,
+        # for extra security, but make sure all files are in that directory.
+        #
+        # If chroot is enabled, you should pass the configfile (from the
+        # commandline) as a full path from the original root. After the
+        # chroot has been performed the now defunct portion of the config
+        # file path is removed to be able to reread the config after a reload.
+        #
+        # All other file paths (working dir, logfile, roothints, and
+        # key files) can be specified in several ways:
+        #       o as an absolute path relative to the new root.
+        #       o as a relative path to the working directory.
+        #       o as an absolute path relative to the original root.
+        # In the last case the path is adjusted to remove the unused portion.
+        #
+        # The pid file can be absolute and outside of the chroot, it is
+        # written just prior to performing the chroot and dropping permissions.
+        #
+        # Additionally, unbound may need to access /dev/urandom (for entropy).
+        # How to do this is specific to your OS.
+        #
+        # If you give "" no chroot is performed. The path must not end in a /.
+        # chroot: "/usr/local/etc/unbound"
+        chroot: "{{ unbound_config.server_section.chroot }}"
+
+        # the log file, "" means log to stderr.
+        # Use of this option sets use-syslog to "no".
+        # logfile: ""
+        logfile: "{{ unbound_config.server_section.logfile }}"
+
+        # print one line with time, IP, name, type, class for every query.
+        # log-queries: no
+        log-queries: {{ unbound_config.server_section.log-queries }}
+
+        # file to read root hints from.
+        # get one from https://www.internic.net/domain/named.cache
+        # root-hints: ""
+        root-hints: "{{ unbound_config.server_section.root-hints }}"
+
+        # enable to not answer id.server and hostname.bind queries.
+        # hide-identity: no
+        hide-identity: {{ unbound_config.server_section.hide-identity }}
+
+        # enable to not answer version.server and version.bind queries.
+        # hide-version: no
+        hide-version: {{ unbound_config.server_section.hide-version }}
+
+        # Sent minimum amount of information to upstream servers to enhance
+        # privacy. Only sent minimum required labels of the QNAME and set QTYPE
+        # to A when possible.
+        # qname-minimisation: yes
+        qname-minimisation: {{ unbound_config.server_section.qname-minimisation }}
+
+        # Aggressive NSEC uses the DNSSEC NSEC chain to synthesize NXDOMAIN
+        # and other denials, using information from previous NXDOMAINs answers.
+        # aggressive-nsec: no
+        aggressive-nsec: {{ unbound_config.server_section.aggressive-nsec }}
+
+        # Use 0x20-encoded random bits in the query to foil spoof attempts.
+        # This feature is an experimental implementation of draft dns-0x20.
+        # use-caps-for-id: no
+        use-caps-for-id: {{ unbound_config.server_section.use-caps-for-id }}
+
+        # If nonzero, unwanted replies are not only reported in statistics,
+        # but also a running total is kept per thread. If it reaches the
+        # threshold, a warning is printed and a defensive action is taken,
+        # the cache is cleared to flush potential poison out of it.
+        # A suggested value is 10000000, the default is 0 (turned off).
+        # unwanted-reply-threshold: 0
+        unwanted-reply-threshold: {{ unbound_config.server_section.unwanted-reply-threshold }}
+
+        # if yes, perform prefetching of almost expired message cache entries.
+        # prefetch: no
+        prefetch: {{ unbound_config.server_section.prefetch }}
+
+        # deny queries of type ANY with an empty response.
+        # deny-any: no
+        deny-any: {{ unbound_config.server_section.deny-any }}
+
+        # File with trusted keys for validation. Specify more than one file
+        # with several entries, one file per entry.
+        # Zone file format, with DS and DNSKEY entries.
+        # Note this gets out of date, use auto-trust-anchor-file please.
+        # trust-anchor-file: ""
+        trust-anchor-file: "{{ unbound_config.server_section.trust-anchor-file }}"
+
+        # Should additional section of secure message also be kept clean of
+        # unsecure data. Useful to shield the users of this validator from
+        # potential bogus data in the additional section. All unsigned data
+        # in the additional section is removed from secure messages.
+        # val-clean-additional: yes
+        val-clean-additional: {{ unbound_config.server_section.val-clean-additional }}
+
+        # Serve expired responses from cache, with serve-expired-reply-ttl in
+        # the response, and then attempt to fetch the data afresh.
+        # serve-expired: no
+        serve-expired: {{ unbound_config.server_section.serve-expired }}
+        
+        #
+        # Limit serving of expired responses to configured seconds after
+        # expiration. 0 disables the limit.
+        # serve-expired-ttl: 0
+        serve-expired-ttl: {{ unbound_config.server_section.serve-expired-ttl }}
+        #
+        # Set the TTL of expired records to the serve-expired-ttl value after a
+        # failed attempt to retrieve the record from upstream. This makes sure
+        # that the expired records will be served as long as there are queries
+        # for it.
+        # serve-expired-ttl-reset: no
+        #
+        # TTL value to use when replying with expired data.
+        # serve-expired-reply-ttl: 30
+        #
+        # Time in milliseconds before replying to the client with expired data.
+        # This essentially enables the serve-stale behavior as specified in
+        # RFC 8767 that first tries to resolve before
+        # immediately responding with expired data.  0 disables this behavior.
+        # A recommended value is 1800.
+        # serve-expired-client-timeout: 0
+        serve-expired-client-timeout: {{ unbound_config.server_section.serve-expired-client-timeout }}
+
+        # the number of slabs to use for the key cache.
+        # the number of slabs must be a power of 2.
+        # more slabs reduce lock contention, but fragment memory usage.
+        # key-cache-slabs: 4
+        key-cache-slabs: {{ unbound_config.server_section.key-cache-slabs }}
+
+# Remote control config section.
+remote-control:
+        # Enable remote control with unbound-control(8) here.
+        # set up the keys and certificates with unbound-control-setup.
+        # control-enable: no
+        control-enable: {{ unbound_config.remote_control_section.control-enable }}
