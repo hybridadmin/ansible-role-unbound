@@ -1,5 +1,4 @@
-___
-# defaults file for unbound
+---
 
 # What version to download/install.
 unbound_version: 1.13.1
