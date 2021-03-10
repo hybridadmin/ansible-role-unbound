@@ -31,7 +31,7 @@ server:
 
         # use SO_REUSEPORT to distribute queries over threads.
         # at extreme load it could be better to turn it off to distribute even.
-        so-reuseport: unbound_config.server_section.so_reuseport 
+        so-reuseport: {{ unbound_config.server_section.so_reuseport }}
 
         # EDNS reassembly buffer to advertise to UDP peers (the actual buffer
         # is set with msg-buffer-size).
@@ -167,7 +167,7 @@ server:
         # Serve expired responses from cache, with serve-expired-reply-ttl in
         # the response, and then attempt to fetch the data afresh.
         serve-expired: {{ unbound_config.server_section.serve_expired }}
-        
+
         # Limit serving of expired responses to configured seconds after
         # expiration. 0 disables the limit.
         serve-expired-ttl: {{ unbound_config.server_section.serve_expired_ttl }}
