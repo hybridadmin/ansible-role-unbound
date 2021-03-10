@@ -1,4 +1,4 @@
----
+___
 # defaults file for unbound
 
 # What version to download/install.
@@ -22,40 +22,40 @@ num_queries_per_thread: 4096
 unbound_config:
   server_section:
     interface: "{{ unbound_interface }}@53"
-    access-control: "0.0.0.0/0 allow"
-    do-ip6: "no"
+    access_control: "0.0.0.0/0 allow"
+    do_ip6: "no"
     chroot: ""
-    aggressive-nsec: "yes"
-    cache-max-ttl: 86400
-    cache-min-ttl: 3600
-    hide-identity: "yes"
-    hide-version: "yes"
+    aggressive_nsec: "yes"
+    cache_max_ttl: 86400
+    cache_min_ttl: 3600
+    hide_identity: "yes"
+    hide_version: "yes"
     prefetch: "yes"
-    use-caps-for-id: "yes"
+    use_caps_for_id: "yes"
     verbosity: 0
-    deny-any: "yes"
-    edns-buffer-size: 1472
-    log-queries: "yes"
-    root-hints: "{{ unbound_config_dir }}/root.hints"
-    trust-anchor-file: "{{ unbound_config_dir }}/root.key"
+    deny_any: "yes"
+    edns_buffer_size: 1472
+    log_queries: "yes"
+    root_hints: "{{ unbound_config_dir }}/root.hints"
+    trust_anchor_file: "{{ unbound_config_dir }}/root.key"
     logfile: "/var/log/unbound/unbound.log"
-    num-threads: "{{ (num_cores | int) * 2 }}"
-    msg-cache-slabs: "{{ (num_cores | int) * 2 }}"
-    rrset-cache-slabs: "{{ (num_cores | int) * 2 }}"
-    infra-cache-slabs: "{{ (num_cores | int) * 2 }}"
-    key-cache-slabs:  "{{ (num_cores | int) * 2 }}"
-    msg-cache-size: "{{ msg_cache_mb }}M"
-    rrset-cache-size: "{{ msg_cache_mb * 2 }}M"
-    outgoing-range: "{{ (num_queries_per_thread | int) * 2 }}"
-    num-queries-per-thread: "{{ num_queries_per_thread }}"
-    so-rcvbuf: 4m
-    so-sndbuf: 4m
-    unwanted-reply-threshold: 10000
-    val-clean-additional: "yes"
-    qname-minimisation: "yes"
-    so-reuseport: "yes"
-    serve-expired: "yes"
-    serve-expired-ttl: 3600
-    serve-expired-client-timeout: 500
+    num_threads: "{{ (num_cores | int) * 2 }}"
+    msg_cache_slabs: "{{ (num_cores | int) * 2 }}"
+    rrset_cache_slabs: "{{ (num_cores | int) * 2 }}"
+    infra_cache_slabs: "{{ (num_cores | int) * 2 }}"
+    key_cache_slabs:  "{{ (num_cores | int) * 2 }}"
+    msg_cache_size: "{{ msg_cache_mb }}M"
+    rrset_cache_size: "{{ msg_cache_mb * 2 }}M"
+    outgoing_range: "{{ (num_queries_per_thread | int) * 2 }}"
+    num_queries_per_thread: "{{ num_queries_per_thread }}"
+    so_rcvbuf: 4m
+    so_sndbuf: 4m
+    unwanted_reply_threshold: 10000
+    val_clean_additional: "yes"
+    qname_minimisation: "yes"
+    so_reuseport: "yes"
+    serve_expired: "yes"
+    serve_expired_ttl: 3600
+    serve_expired_client_timeout: 500
   remote_control_section:
-    control-enable: "yes"
+    control_enable: "yes"
