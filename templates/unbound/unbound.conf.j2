@@ -6,7 +6,6 @@ server:
         verbosity: {{ unbound_config.server_section.verbosity }}
 
         # number of threads to create. 1 disables threading.
-        # num-threads: 1
         num-threads: {{ unbound_config.server_section.num_threads }}
 
         # specify the interfaces to answer queries from by ip-address.
