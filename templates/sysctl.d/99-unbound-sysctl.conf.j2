@@ -2,7 +2,7 @@
 
 # with inspiration from: https://www.cyberciti.biz/faq/linux-tcp-tuning/
 
-{% if ansible_kernel.split('.') > '4.8'.split('.') %}
+{% if (ansible_kernel.split('.')[0:3] | join('.')) is version('4.8', operator='gt', strict=True) %}
 # Fix it on Linux by enabling BBR TCP congestion control.
 net.core.default_qdisc=fq
 net.ipv4.tcp_congestion_control=bbr
