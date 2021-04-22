@@ -1,5 +1,6 @@
 galaxy_info:
-  author: Tinashe Chikomo
+  author: hybridadmin
+  namespace: hybridadmin
   role_name: unbound
   description: Install and configure unbound on your system with support for Plain DNS, DOT, DOH and Dnscrypt.
   license: Apache-2.0

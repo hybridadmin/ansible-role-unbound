@@ -6,7 +6,12 @@
     msg: "{{ ansible_virtualization_type }}"
 
 - name: "Wait for systemd to complete initialization."
-  command: systemctl is-system-running
+#  command: systemctl is-system-running
+  shell: |
+    set -o pipefail
+    systemctl is-system-running
+  args:
+    executable: /bin/bash
   register: systemctl_status
   until: >
     'running' in systemctl_status.stdout or

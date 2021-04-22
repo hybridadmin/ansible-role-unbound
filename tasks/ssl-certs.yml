@@ -2,7 +2,8 @@
 
 - name: "create letsencrypt ssl certs"
   block:
-  - debug:
+  - name: list required ssl cert(s)
+    debug:
       msg: "{{ letsencrypt_ssl_certs }}"
 
   - name: "Check if SSL cert exist"
@@ -12,7 +13,8 @@
     with_items:
       - "{{ letsencrypt_ssl_certs }}"
 
-  - debug:
+  - name: show ssl cert exists
+    debug:
       msg: "{{ ssl_certs_exist }}"
 
   - name: "Generating LetsEncrypt SSL"

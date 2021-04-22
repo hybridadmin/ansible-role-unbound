@@ -5,5 +5,8 @@
   gather_facts: yes
   vars:
     unbound_interface: 127.0.0.1
-  roles:
-    - role: hybridadmin.unbound
+  tasks:
+    - name: "Include podman role"
+      include_role:
+        name: "hybridadmin.unbound"
+#        name: "ansible-role-unbound"
