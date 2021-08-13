@@ -1,5 +1,4 @@
 ---
-
 - name: "ensure *.conf files are included in {{ unbound_config_dir }}/unbound.conf"
   lineinfile:
     path: "{{ unbound_config_dir }}/unbound.conf"
@@ -26,10 +25,11 @@
     set -o pipefail
     sysctl -p /etc/sysctl.d/99-unbound-sysctl.conf
   args:
-      executable: /bin/bash
+    executable: /bin/bash
   become: true
+  register: run_sysctl
   changed_when: false
-  ignore_errors: yes
+  failed_when: run_sysctl.rc > 255
 
 - name: "Increase max open files for system/users"
   lineinfile:

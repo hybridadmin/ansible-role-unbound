@@ -7,6 +7,7 @@
 ## Example Playbook
 
 An example playbook can be specified as below:
+
 ```yaml
 ---
 - hosts: all
@@ -21,20 +22,22 @@ An example playbook can be specified as below:
 ## Role Variables
 
 The configuration options in [unbound.conf](https://nlnetlabs.nl/documentation/unbound/unbound.conf/) and what sections they should be used under are defined below:
+
 ```yaml
-unbound_config: 
-  server_section: 'options under the server: clause are defined here'
-  remote_control_section: 'options under the remote-control: clause are defined here'
-  stub_zone_section: 'options under the stub-zone: clause are defined here'
-  forward_zone_section: 'options under the forward-zone: clause are defined here'
-  auth_zone_section: 'options under the auth-zone: clause are defined here'
-  view_section: 'options under the view: clause are defined here'
-  python_section: 'options under the python: clause are defined here'
-  dnscrypt_section: 'options under the dnscrypt: clause are defined here'
-  rpz_section: 'options under the rpz: clause are defined here'
+unbound_config:
+  server_section: "options under the server: clause are defined here"
+  remote_control_section: "options under the remote-control: clause are defined here"
+  stub_zone_section: "options under the stub-zone: clause are defined here"
+  forward_zone_section: "options under the forward-zone: clause are defined here"
+  auth_zone_section: "options under the auth-zone: clause are defined here"
+  view_section: "options under the view: clause are defined here"
+  python_section: "options under the python: clause are defined here"
+  dnscrypt_section: "options under the dnscrypt: clause are defined here"
+  rpz_section: "options under the rpz: clause are defined here"
 ```
 
 These variables are set in `defaults/main.yml`:
+
 ```yaml
 ---
 # defaults file for unbound
@@ -80,7 +83,7 @@ unbound_config:
     ratelimit: 1000
     ratelimit-size: 1m
   remote_control_section:
-    control-enable: "yes"  
+    control-enable: "yes"
 ```
 
 ## Requirements
@@ -88,11 +91,9 @@ unbound_config:
 - Access to a repository containing packages, likely on the internet.
 - A recent version of Ansible. (Tests run on the current, previous and next release of Ansible.)
 
-
 ## License
 
 Apache-2.0
-
 
 ## Author Information
 

@@ -1,6 +1,4 @@
 ---
-
-
 - name: "remove {{ unbound_temporary_directory }}/dnscrypt-wrapper dir if it exists"
   file:
     path: "{{ unbound_temporary_directory }}/dnscrypt-wrapper"
@@ -9,7 +7,7 @@
 
 - name: "clone latest dnscrypt-wrapper repo"
   git:
-    repo: 'git://github.com/cofyc/dnscrypt-wrapper.git'
+    repo: "git://github.com/cofyc/dnscrypt-wrapper.git"
     dest: "{{ unbound_temporary_directory }}/dnscrypt-wrapper"
     version: master
   changed_when: false
@@ -32,7 +30,7 @@
     executable: /bin/bash
     creates: "{{ unbound_dnscrypt_dir }}/secret.key"
   environment:
-    PATH: '/usr/local/sbin:{{ ansible_env.PATH }}'
+    PATH: "/usr/local/sbin:{{ ansible_env.PATH }}"
   become: true
   changed_when: false
   register: create_provider_keypair
@@ -45,7 +43,7 @@
     executable: /bin/bash
     creates: "{{ unbound_dnscrypt_dir }}/crypt_secretkey.key"
   environment:
-    PATH: '/usr/local/sbin:{{ ansible_env.PATH }}'
+    PATH: "/usr/local/sbin:{{ ansible_env.PATH }}"
   become: true
   changed_when: false
   register: create_secret_key
@@ -60,7 +58,7 @@
     executable: /bin/bash
     creates: "{{ unbound_dnscrypt_dir }}/provider_cert.cert"
   environment:
-    PATH: '/usr/local/sbin:{{ ansible_env.PATH }}'
+    PATH: "/usr/local/sbin:{{ ansible_env.PATH }}"
   become: true
   changed_when: false
   register: create_provider_cert
@@ -83,7 +81,7 @@
     content: "{{ create_provider_keypair.stdout }}"
     dest: "{{ ansible_user_dir }}/dnsstamp.txt"
     mode: 0644
-#  delegate_to: localhost
+  #  delegate_to: localhost
   changed_when: false
 
 - name: "set correct folder ownership for {{ unbound_dnscrypt_dir }}"

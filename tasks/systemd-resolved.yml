@@ -9,7 +9,7 @@
 
 - name: edit systemd-resolved conf
   replace:
-    path:  /etc/systemd/resolved.conf
+    path: /etc/systemd/resolved.conf
     regexp: "{{ item.name }}"
     replace: "{{ item.value }}"
   loop:
@@ -33,5 +33,5 @@
     - { name: "^((#|)dns=.*)", value: "dns=none" }
     - { name: "^((#|)systemd-resolved=.*)", value: "systemd-resolved=false" }
   when:
-  - ansible_os_family == 'RedHat'
-  - nmconf.stat.exists
+    - ansible_os_family == 'RedHat'
+    - nmconf.stat.exists

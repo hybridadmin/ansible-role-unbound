@@ -25,16 +25,43 @@ ld_library_path: "{% if '/etc/unbound' == unbound_config_dir %}/usr/lib{% else %
 unbound_dnscrypt_dir: "{{ unbound_config_dir }}/dnscrypt"
 
 required_dirs:
-  - {path: "{{ unbound_confd_dir }}", perms: "0755", owner: "unbound", group: "unbound"}
-  - {path: "/var/log/unbound", perms: "0755", owner: "unbound", group: "unbound"}
-  - {path: "{{ unbound_dnscrypt_dir }}", perms: "0755", owner: "unbound", group: "unbound"}
+  - {
+      path: "{{ unbound_confd_dir }}",
+      perms: "0755",
+      owner: "unbound",
+      group: "unbound",
+    }
+  - {
+      path: "/var/log/unbound",
+      perms: "0755",
+      owner: "unbound",
+      group: "unbound",
+    }
+  - {
+      path: "{{ unbound_dnscrypt_dir }}",
+      perms: "0755",
+      owner: "unbound",
+      group: "unbound",
+    }
 
 config_templates:
-  - {src: "sysctl.d/99-unbound-sysctl.conf.j2", dest: "/etc/sysctl.d/99-unbound-sysctl.conf", mode: "0644"}
-  - {src: "limits.d/99-unbound-limits.conf.j2", dest: "/etc/security/limits.d/99-unbound-limits.conf", mode: "0644"}
+  - {
+      src: "sysctl.d/99-unbound-sysctl.conf.j2",
+      dest: "/etc/sysctl.d/99-unbound-sysctl.conf",
+      mode: "0644",
+    }
+  - {
+      src: "limits.d/99-unbound-limits.conf.j2",
+      dest: "/etc/security/limits.d/99-unbound-limits.conf",
+      mode: "0644",
+    }
 
 letsencrypt_ssl_certs:
-  - { fqdn: "{{ ssl_tls_hostname }}", privkey: "/etc/letsencrypt/live/{{ ssl_tls_hostname }}/privkey.pem", cert: "/etc/letsencrypt/live/{{ ssl_tls_hostname }}/fullchain.pem" }
+  - {
+      fqdn: "{{ ssl_tls_hostname }}",
+      privkey: "/etc/letsencrypt/live/{{ ssl_tls_hostname }}/privkey.pem",
+      cert: "/etc/letsencrypt/live/{{ ssl_tls_hostname }}/fullchain.pem",
+    }
 
 _unbound_requirements:
   default:
@@ -89,12 +116,12 @@ _unbound_requirements:
 unbound_requirements: "{{ _unbound_requirements[ansible_os_family] + _unbound_requirements['default'] }}"
 
 config_sections:
-  - { name: "server_section", value: 'server' }
-  - { name: "remote_control_section", value: 'remote-control' }
-  - { name: "stub_zone_section", value: 'stub-zone' }
-  - { name: "forward_zone_section", value: 'forward-zone' }
-  - { name: "auth_zone_section", value: 'auth-zone' }
-  - { name: "view_section", value: 'view' }
-  - { name: "python_section", value: 'python' }
-  - { name: "dnscrypt_section", value: 'dnscrypt' }
-  - { name: "rpz_section", value: 'rpz' }
+  - { name: "server_section", value: "server" }
+  - { name: "remote_control_section", value: "remote-control" }
+  - { name: "stub_zone_section", value: "stub-zone" }
+  - { name: "forward_zone_section", value: "forward-zone" }
+  - { name: "auth_zone_section", value: "auth-zone" }
+  - { name: "view_section", value: "view" }
+  - { name: "python_section", value: "python" }
+  - { name: "dnscrypt_section", value: "dnscrypt" }
+  - { name: "rpz_section", value: "rpz" }

@@ -4,6 +4,7 @@
   become: yes
   gather_facts: yes
   vars:
+    unbound_version: 1.13.2
     unbound_interface: 127.0.0.1
   tasks:
     - name: "Include podman role"

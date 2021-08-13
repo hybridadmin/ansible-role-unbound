@@ -1,5 +1,4 @@
 ---
-
 - name: "install required packages"
   action: >
     {{ ansible_pkg_mgr }} name={{ unbound_requirements }} state=present update_cache=yes

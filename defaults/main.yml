@@ -1,5 +1,4 @@
 ---
-
 # What version to download/install.
 unbound_version: 1.13.1
 
@@ -42,7 +41,7 @@ unbound_config:
     msg_cache_slabs: "{{ (num_cores | int) * 2 }}"
     rrset_cache_slabs: "{{ (num_cores | int) * 2 }}"
     infra_cache_slabs: "{{ (num_cores | int) * 2 }}"
-    key_cache_slabs:  "{{ (num_cores | int) * 2 }}"
+    key_cache_slabs: "{{ (num_cores | int) * 2 }}"
     msg_cache_size: "{{ msg_cache_mb }}M"
     rrset_cache_size: "{{ msg_cache_mb * 2 }}M"
     outgoing_range: "{{ (num_queries_per_thread | int) * 2 }}"

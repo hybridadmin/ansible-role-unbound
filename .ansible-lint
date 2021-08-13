@@ -10,3 +10,4 @@ warn_list:
   - '106'
   - '208'
   - '303'
+  - no-handler

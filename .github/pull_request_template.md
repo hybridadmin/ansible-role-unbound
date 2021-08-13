@@ -1,7 +1,6 @@
 ---
 name: Pull request
 about: Describe the proposed change
-
 ---
 
 **Describe the change**
