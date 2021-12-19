@@ -12,7 +12,7 @@ An example playbook can be specified as below:
 ---
 - hosts: all
   vars:
-    unbound_version: 1.13.1
+    unbound_version: 1.13.2
     unbound_temporary_directory: /tmp
     unbound_interface: 127.0.0.1
   roles:
