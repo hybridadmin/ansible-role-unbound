@@ -7,7 +7,7 @@
 
 - name: "clone latest dnscrypt-wrapper repo"
   git:
-    repo: "git://github.com/cofyc/dnscrypt-wrapper.git"
+    repo: "https://github.com/cofyc/dnscrypt-wrapper.git"
     dest: "{{ unbound_temporary_directory }}/dnscrypt-wrapper"
     version: master
   changed_when: false
