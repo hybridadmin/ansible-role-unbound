@@ -1,4 +1,5 @@
 ---
+
 - name: "enable DNS over TLS"
   blockinfile:
     path: "{{ unbound_confd_dir }}/99-custom-unbound.conf"

@@ -1,4 +1,5 @@
 ---
+
 - name: "remove {{ unbound_temporary_directory }}/dnscrypt-wrapper dir if it exists"
   file:
     path: "{{ unbound_temporary_directory }}/dnscrypt-wrapper"

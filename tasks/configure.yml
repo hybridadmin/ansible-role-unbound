@@ -1,4 +1,5 @@
 ---
+
 - name: "ensure *.conf files are included in {{ unbound_config_dir }}/unbound.conf"
   lineinfile:
     path: "{{ unbound_config_dir }}/unbound.conf"
