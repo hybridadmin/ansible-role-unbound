@@ -33,28 +33,28 @@
   register: systemd_resolved_status
 
 - name: "disable systemd-resolved service"
-  include: systemd-resolved.yml
+  include_tasks: systemd-resolved.yml
   when: ('enabled' in systemd_resolved_status.stdout)
 
 - name: "include install tasks"
-  include: install.yml
+  include_tasks: install.yml
 
 - name: "include configure tasks"
-  include: configure.yml
+  include_tasks: configure.yml
 
 - name: "include ssl config tasks"
-  include: ssl-certs.yml
+  include_tasks: ssl-certs.yml
   when: enable_dot or enable_doh
 
 - name: flush handlers
   meta: flush_handlers
 
 - name: "include doh/dot config tasks"
-  include: doh-dot-server.yml
+  include_tasks: doh-dot-server.yml
   when: enable_dot or enable_doh
 
 - name: "include dnscrypt config tasks"
-  include: dnscrypt.yml
+  include_tasks: dnscrypt.yml
   when: enable_dnscrypt
 
 - name: "restart unbound to enable all settings"
