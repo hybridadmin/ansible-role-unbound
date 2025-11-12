@@ -53,9 +53,10 @@
   include_tasks: doh-dot-server.yml
   when: enable_dot or enable_doh
 
+# TODO: dnscrypt support on ubuntu noble
 - name: "include dnscrypt config tasks"
   include_tasks: dnscrypt.yml
-  when: enable_dnscrypt
+  when: enable_dnscrypt and not(ansible_distribution_release == 'noble')
 
 - name: "restart unbound to enable all settings"
   systemd:
