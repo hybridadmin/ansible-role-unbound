@@ -24,6 +24,16 @@ ld_library_path: "{% if '/etc/unbound' == unbound_config_dir %}/usr/lib{% else %
 
 unbound_dnscrypt_dir: "{{ unbound_config_dir }}/dnscrypt"
 
+_system_config_dir:
+  Alpine: "/etc/systemd"
+  Debian: "/etc/systemd"
+  Ubuntu: "/etc/systemd"
+  Fedora: "/usr/lib/systemd"
+  CentOS: "/usr/lib/systemd"
+  Suse: "/etc/systemd"
+
+system_config_dir: "{{ _system_config_dir[ansible_distribution] }}"
+
 required_dirs:
   - {
       path: "{{ unbound_confd_dir }}",
