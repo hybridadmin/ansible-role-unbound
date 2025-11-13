@@ -1,6 +1,6 @@
 ## Unbound Role
 
-[![travis](https://travis-ci.com/hybridadmin/ansible-role-unbound.svg?branch=master)](https://travis-ci.com/hybridadmin/ansible-role-unbound.svg?branch=master) ![CI](https://github.com/hybridadmin/ansible-role-unbound/workflows/CI/badge.svg?branch=master) [![quality](https://img.shields.io/ansible/quality/49048)](https://galaxy.ansible.com/hybridadmin/unbound) [![downloads](https://img.shields.io/ansible/role/d/49048)](https://galaxy.ansible.com/hybridadmin/unbound)
+[![run_molecule](https://github.com/hybridadmin/ansible-role-unbound/actions/workflows/build.yml/badge.svg)](https://github.com/hybridadmin/ansible-role-unbound/actions/workflows/build.yml)
 
 > Install and configure unbound on your system with support for Plain DNS, DOT, DOH and Dnscrypt.
 
